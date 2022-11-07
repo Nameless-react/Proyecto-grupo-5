@@ -20,7 +20,15 @@ public class clsHandler {
         JOptionPane.showMessageDialog(null, message);
     }
     
-    public char inputChar(String mensaje){
-        return JOptionPane.showInputDialog(mensaje).toLowerCase().charAt(0);
+    public char inputChar(String message){
+        return JOptionPane.showInputDialog(message).toLowerCase().charAt(0);
     }
+    public String inputString(String message) {
+        return JOptionPane.showInputDialog(message);
+    }
+    
+    public Integer inputInt(String message) {
+        return Integer.parseInt(JOptionPane.showInputDialog(message));
+    }
+    
 }
