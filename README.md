@@ -1,12 +1,12 @@
 # Proyecto-grupo-5
 
-Berlin Cordero Brenes
-Joel García Rojas
-Kristin Gonzalez Peña
-Danny Jimenez Palma
+Berlin Cordero Brenes <br>
+Joel García Rojas <br>
+Kristin Gonzalez Peña <br>
+Danny Jimenez Palma <br>
 Mauricio Hidalgo Garzon
 
-Prof. Steven Blanco Navarro
+Prof. Steven Blanco Navarro <br>
 Introducción a la programación
 
 Este proyecto tiene como objetivo proporcionar al usuario un sistema que permita
