@@ -16,4 +16,24 @@ public class clsReportes {
     public void reportesAdministador() {
         
     }
+  
+ 
+   public void ModeloReporteEstadistico(){
+        clsHandler clsH = new clsHandler();
+       clsH.showMessage("En construcción");
+ 
+        //try{
+        //    Modelo_Reporteestadistico = (new DefaultTableModel(null, new String[]{"nombre","identificacion","fechas","total de transacciones realizadss por el usuario",}){
+        //    class[] Types = new class []{
+        //        java.lang.String.class.java.lang.String.class,
+        //        java.lang.String.class.java.lang.String.class
+        //                );
+        //        boolean[]canEdit=new boolean []{
+        //            false,false,false,false
+        //                );
+        //        public Class getColumnClass(int columnIndex){
+        //} catch (IOExeption e) {
+        //       clsH.showMessage(e);  
+        //};
+    }
 }

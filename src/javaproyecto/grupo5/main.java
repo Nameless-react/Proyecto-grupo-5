@@ -4,19 +4,19 @@
  */
 package javaproyecto.grupo5;
 
-import javax.swing.JOptionPane;
 
 /**
  *
  * @author joel
  */
-public class JavaProyectoGrupo5 {
+public class main {
 
     /**
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        System.out.println("Hello World");
+        clsMenu clsM = new clsMenu();
+        clsM.menu();
     }
     
     

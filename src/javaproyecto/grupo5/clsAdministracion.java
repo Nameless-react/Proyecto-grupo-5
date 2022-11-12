@@ -18,9 +18,40 @@ import java.util.Scanner;
  * @author joel
  */
 public class clsAdministracion {
-    public void validacionContraseñaUsuario(String contraseña, String usuario) {
-            
+    public void validacionContraseñaUsuario() {
+        clsHandler clsH = new clsHandler();
+        String usuario1 = "", contra1 = "", usuario2 ="", contra2 = "";
+        int contador = 0;
+        boolean logueado = false;
+        char opcion = ' ';
+        String data = "";
+        String[] espacio;
+    
+    
+        do {
+            try{
+
+                usuario2 = clsH.inputString("Escriba su nombre de usuario:");
+                File Usuarios = new File("dataBase.txt");
+                Scanner hola = new Scanner(Usuarios); 
+
+                while(hola.hasNextLine()){
+                    data+=hola.nextLine();
+                }
+                espacio = data.split("-");
+                for (int i = 0; i<espacio.length; i++) {
+                    System.out.println(espacio[i]);
+                }
+                break;
+                //contador++;
+            }catch(IOException e){
+                clsH.showMessage("ERROR ARCHIVO NO ENCONTRADO");
+            }
+
+        } while (contador < 3);
     }
+    
+    
     
     public void seguridad() {
         clsHandler clsH = new clsHandler();
@@ -180,6 +211,57 @@ public class clsAdministracion {
     
     
     public void balances() {
-        
+        clsHandler clsH = new clsHandler();
+
+        String dinero = "";
+        int opcion = 0;
+        float saldoActual = 0, deposito = 0, retiro = 0.0f;
+        char siguiente = ' ', siguiente2 = ' ';
+
+        do {
+            opcion = clsH.inputInt("Por favor digite la opcion que desea realizar: "
+                    + "\n1) Consulta de cuentas"
+                    + "\n2) Deposito"
+                    + "\n3) Retiro"
+                    + "\n4) Salir");
+
+            switch (opcion) {
+                case 1:
+                    clsH.showMessage("El Saldo en su cuenta es de: " + saldoActual + " colones");
+                    break;
+                case 2:
+                    do {
+                        deposito = clsH.inputFloat("Su saldo actual es de: " + saldoActual
+                                + " \nIngrese el monto que desea depositar: ");
+                        if (deposito >= 1000) {
+                            saldoActual = saldoActual + deposito;
+                            clsH.showMessage("El depósito se a realizado con exito \nEl saldo en su cuenta es de: " + saldoActual);
+                        } else {
+                            clsH.showMessage("El depósito debe ser mayor a 1000 colones");
+                        }
+                        siguiente = clsH.inputChar("Desea continuar: \nSi\nNo");
+                    } while (siguiente == 'S' && siguiente != 'N');
+                    break;
+                case 3:
+                    do {
+                        retiro = clsH.inputFloat("Su saldo actual es de: " + saldoActual + " \nIngrese el monto que desea retirar: ");
+                        if (retiro > saldoActual) {
+                            clsH.showMessage("No cuenta con suficiente dinero en la cuenta");
+                        } else if (retiro >= 1000) {
+                            saldoActual -= retiro;
+                            clsH.showMessage("El retiro de su cuenta se ah realizado con exito \nEl saldo en su cuenta es de: " + saldoActual);
+                        } else {
+                            clsH.showMessage("El retiro debe ser mayor a 1000 colones");
+                        }
+                        siguiente2 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                    } while (siguiente2 == 'S' && siguiente2 != 'N');
+                    break;
+                case 4:
+                    break;
+                default:
+                    clsH.showMessage("La opcion que dijito es incorrecta");
+                    break;
+            }
+        } while (opcion != 4);
     }
 }

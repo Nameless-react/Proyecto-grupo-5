@@ -31,4 +31,9 @@ public class clsHandler {
         return Integer.parseInt(JOptionPane.showInputDialog(message));
     }
     
+    public float inputFloat(String message) {
+        return Float.parseFloat(JOptionPane.showInputDialog(message));
+    }
+   
+    
 }
