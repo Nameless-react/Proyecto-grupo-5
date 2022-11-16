@@ -5,8 +5,11 @@
 package javaproyecto.grupo5;
 
 import java.awt.TextArea;
+import java.io.File;
+import java.util.Scanner;
 import javax.swing.JOptionPane;
-
+import java.io.File;
+import java.io.IOException;
 /**
  *
  * @author joel
@@ -35,5 +38,23 @@ public class clsHandler {
         return Float.parseFloat(JOptionPane.showInputDialog(message));
     }
    
+    public String[] getData(String path) {
+        String[] data = null;
+        String datum = "";
+        try {
+            
+            Scanner file = new Scanner(new File(path)); 
+
+            while(file.hasNextLine()){
+                datum += file.nextLine();
+            }
+
+            data = datum.split("-");
+            
+        } catch (IOException e) {
+            this.showMessage("Error: " + e);
+        }
+        return data;
+    }
     
 }

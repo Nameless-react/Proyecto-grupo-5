@@ -12,16 +12,17 @@ public class clsMenu {
     public void menu() {
         int opcion = 0;
         clsHandler clsH = new clsHandler();
-        clsAdministracion clsA = new clsAdministracion();
+        clsAdministracion clsA = new clsAdministracion("usuarios.txt", "clientes.txt");
         clsReportes clsR = new clsReportes();
         
         do {
             opcion = clsH.inputInt("Digite la opción que desea:"
                     + "\n 1) validación de usuarios"
                     + "\n 2) CRUD de usuarios"
-                    + "\n 3) balances"
-                    + "\n 4) reportes"
-                    + "\n 5) salir");
+                    + "\n 3) CRUD de clientes"
+                    + "\n 4) balances"
+                    + "\n 5) reportes"
+                    + "\n 6) salir");
             
             switch(opcion) {
                 case 1:
@@ -31,14 +32,17 @@ public class clsMenu {
                     clsA.seguridad();
                     break;
                 case 3:
-                    clsA.balances();
+                    clsA.ingresoClientes();
                     break;
                 case 4:
-                    clsR.ModeloReporteEstadistico();
+                    clsA.balances();
                     break;
                 case 5:
+                    clsR.ModeloReporteEstadistico();
+                    break;
+                case 6:
                     break;
             }
-        } while (opcion != 5);
+        } while (opcion != 6);
     }
 }
