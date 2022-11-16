@@ -9,7 +9,10 @@ import java.io.File;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 /**
  *
  * @author joel
@@ -39,22 +42,38 @@ public class clsHandler {
     }
    
     public String[] getData(String path) {
-        String[] data = null;
         String datum = "";
         try {
             
             Scanner file = new Scanner(new File(path)); 
 
             while(file.hasNextLine()){
-                datum += file.nextLine();
+                datum += file.nextLine() + "\n";
             }
 
-            data = datum.split("-");
             
+            file.close();
         } catch (IOException e) {
             this.showMessage("Error: " + e);
         }
-        return data;
+        return datum.split("-");
     }
     
+    public void changeData(String[] data, FileWriter file) {
+        try {
+            for (int j = 0; j < data.length; j++) {  
+                if (j == data.length - 1) file.write(data[j] + "\n-");
+                else file.write(data[j] + "\n");
+            } 
+            
+        } catch (IOException e) {
+            this.showMessage("Error: " + e);
+        }  
+    }
+    
+    public Matcher match(String matcher, String identifier, String input) {
+            String regex = String.format("\\n?%2$s\\:\\s%1$s\\n", matcher, identifier);
+            Pattern pattern = Pattern.compile(regex);
+            return pattern.matcher(input);      
+    }
 }

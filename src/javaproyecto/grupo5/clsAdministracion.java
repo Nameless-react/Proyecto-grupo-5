@@ -10,12 +10,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
-import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.util.Scanner;
-import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
-import java.util.Date;
+
 
 /**
  *
@@ -25,6 +22,8 @@ public class clsAdministracion {
 
     public String usuariosPath;
     public String clientesPath;
+    public String administrador;
+    private boolean sesion;
     
     public clsAdministracion (String usuariosPath, String clientesPath) {
         this.usuariosPath = usuariosPath;
@@ -32,26 +31,53 @@ public class clsAdministracion {
     } 
     
     
+    public boolean getSesion() {
+        return this.sesion;
+    }
+    
     public void validacionContraseñaUsuario() {
         clsHandler clsH = new clsHandler();
-        String usuario;
+        String nombre = "", contraseña;
+        
         int intentos = 0;
         boolean bloqueado = false;
-        char opcion = ' ';
-        String datum = "";
+        
+        //char opcion = ' ';
         String[] data;
-    
+   
     
         do {
-            usuario = clsH.inputString("Escriba su nombre de usuario: ");
-            data = clsH.getData(this.usuariosPath);
-
-            for (int i = 0; i < data.length; i++) {
-
+            nombre = clsH.inputString("Escriba su nombre de usuario: ");
+            contraseña = clsH.inputString("Escriba su contraseña: ");
+            data = clsH.getData(this.usuariosPath);    
+        
+            Matcher matcherNombre;
+            Matcher matcherContraseña;
+            
+            for (int i = 0; i < data.length; i++) {                
+                matcherNombre = clsH.match(nombre, "Nombre", data[i]);             
+                matcherContraseña = clsH.match(contraseña, "Contraseña", data[i]);
+                
+                if(matcherNombre.find() && matcherContraseña.find()) {
+                    //String[] usuario = data[i].split("\n");
+                    clsH.showMessage("Bienvenido: " + nombre);
+                    this.administrador = nombre;
+                    bloqueado = true;
+                    break;
+                } else {
+                    clsH.showMessage("Nombre de usuario o contraseña erronea");
+                    intentos++;
+                    
+                    if(intentos == 3) {
+                        clsH.showMessage("Usuario bloqueado");
+                    }
+                    break;
+                }
             }
-            intentos++;
+            
+            
 
-        } while (intentos < 3);
+        } while (intentos < 3 && !bloqueado);
     }
     
     
@@ -59,15 +85,20 @@ public class clsAdministracion {
         clsHandler clsH = new clsHandler();
         char option = ' ', cambio = ' ';
      
-        String id = "", datum = "";
-        
+        String id = "";
+        File exitsDataBase = new File(this.usuariosPath);
         
         String[] data;
         String[] client;
         
-        Pattern pattern;
+        
         Matcher matcher;
         do {
+            if (!exitsDataBase.exists()) {
+                clsH.showMessage("El archivo usuarios no existe, no podemos procesar las peticiones");
+                return;
+            }
+            
             option = clsH.inputChar("Digite la opción que desea:"
                     + "\n c) ingresar cliente"
                     + "\n u) modificar cliente"
@@ -116,42 +147,27 @@ public class clsAdministracion {
                                        + "\nTeléfono: " + telefono            
                                        + "\nTipo de cuenta: " + tipoCuenta            
                                        + "\nMoneda de la cuenta: " + monedaCuenta            
-                                       + "\nNúmero de cuenta: " + (int) (Math.floor(Math.random() * (10000000 - 100000000) + 10000000))
+                                       + "\nNúmero de cuenta: " + (int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000))
                                        + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nMonto en la cuenta: 0"
                                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime())
-                                       + "\nDeshabilitado: " + false + "\n-");            
+                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n-");
+                                       
                         dataBase.close();
                     } catch (IOException e) {
                         clsH.showMessage("Error: " + e);
                     }
                     break;
                 case 'u':
-                    datum = "";
-                    cambio = ' ';
-
                     id = clsH.inputString("Digite la identificacón del usuario que desea modificar");
                     
                     try {
-                        Scanner reader = new Scanner(new File(this.clientesPath));
-
-                        String regexp = String.format("\\n?Identificacion\\:\\s%s", id);
-                        pattern = Pattern.compile(regexp);
-
-
-                        while (reader.hasNextLine()) {
-                            datum += reader.nextLine() + "\n";
-                        }
-
-                        reader.close();
-                        data = datum.split("-");
+                        data = clsH.getData(this.clientesPath);
                         FileWriter writer = new FileWriter(this.clientesPath);
 
 
                         for (int i = 0; i < data.length; i++) {
-                            matcher = pattern.matcher(data[i]);
-
+                            matcher = clsH.match(id, "Identificacion", data[i]);  
 
                             if (matcher.find()) {
                                 client = data[i].split("\n");
@@ -166,7 +182,8 @@ public class clsAdministracion {
                                                                 + "\n s) Sexo"
                                                                 + "\n i) Ingresos"
                                                                 + "\n r) Residencia"
-                                                                + "\n a) Fecha de nacimiento");
+                                                                + "\n a) Fecha de nacimiento"
+                                                                + "\n d) Monto en la cuenta");
                                 String actualizado = clsH.inputString("Digite el dato actualizado:");
 
                                 switch (cambio) {
@@ -204,17 +221,19 @@ public class clsAdministracion {
 
                                     case 'p':
                                         client[10] = "Tipo de cuenta: " +  actualizado;
-                                        break; 
+                                        break;
+                                        
                                     case 'm':
                                         client[11] = "Moneda de la cuenta: " +  actualizado;
+                                        break;
+                                        
+                                    case 'd':
+                                        client[14] = "Monto en la cuenta: " +  actualizado;
                                         break; 
                                 }
 
-
-                                for (int j = 0; j < client.length; j++) {  
-                                    if (j == client.length - 1) writer.write(client[j] + "\n-");
-                                    else writer.write(client[j] + "\n");
-                                } 
+                                clsH.changeData(client, writer); 
+                                
                             } else {
                                 if (i != data.length - 1) writer.write(data[i] + "-");
                             }
@@ -227,23 +246,17 @@ public class clsAdministracion {
                     break;
                     
                 case 'd':
-                    datum = "";
+                    
                     id = clsH.inputString("Digite la identificacón del usuario que desea eliminar");
                     
                     try {
-                        Scanner readerDelete = new Scanner(new File(this.clientesPath));
-                        Pattern regex = Pattern.compile(String.format("\\n?Identificacion\\:\\s%s", id));
-
-                        while (readerDelete.hasNextLine()) {
-                            datum += readerDelete.nextLine() + "\n";
-                        }
-                        data = datum.split("-");
+                        data = clsH.getData(this.clientesPath);
+                       
 
                         FileWriter delete = new FileWriter(this.clientesPath);
-                        
                         for (int i = 0; i < data.length; i++) {
-                            matcher = regex.matcher(data[i]);
-                            if (!matcher.find() && i != data.length -1 ) delete.write(data[i] + "-");
+                            matcher = clsH.match(id, "Identificacion", data[i]);
+                            if (!matcher.find() && i != data.length - 1 ) delete.write(data[i] + "-");
                             
                         }
 
@@ -254,17 +267,9 @@ public class clsAdministracion {
                     break;
                     
                 case 'r':
-                    try {
-                        datum = "";
-                        Scanner reader = new Scanner(new File(this.clientesPath));
-                        while (reader.hasNextLine()) {
-                                datum += reader.nextLine() + "\n";
-                            }
-                        clsH.showMessage(new TextArea(datum));                        
-                    } catch (IOException e) {
-                        clsH.showMessage("Error: " + e);
-                    }
-                    
+                    data = clsH.getData(this.clientesPath);
+                    clsH.showMessage(new TextArea(String.join("\n-\n", data)));                        
+                   
                     break;
                 }
         } while (option != 's');
@@ -275,12 +280,11 @@ public class clsAdministracion {
         File exitsDataBase = new File(this.usuariosPath);
         
         char option = ' ', cambio = ' ';
-        String datum = "", id = "";
+        String id = "";
         
         String[] data;
         String[] user;
         
-        Pattern pattern;
         Matcher matcher;
         
         do {
@@ -293,8 +297,8 @@ public class clsAdministracion {
             
             try {
                 option = clsH.inputChar("¿Que desea hacer?:"
-                                + "\n i) ingresar nuevo usuario"
-                                + "\n m) modificar usuario"
+                                + "\n c) ingresar nuevo usuario"
+                                + "\n u) modificar usuario"
                                 + "\n d) deshabilitar/habilitar usuario"
                                 + "\n s) salir");
 
@@ -319,28 +323,14 @@ public class clsAdministracion {
                         dataBase.close();
                         break;
                     case 'u':
-                        datum = "";
-                        cambio = ' ';
-                        
                         id = clsH.inputString("Digite la identificacón del usuario que desea modificar");
-                        
-                        Scanner reader = new Scanner(new File(this.usuariosPath));
-                        
-                        String regexp = String.format("\\n?Identificacion\\:\\s%s", id);
-                        pattern = Pattern.compile(regexp);
+                        data = clsH.getData(this.usuariosPath); 
                         
                         
-                        while (reader.hasNextLine()) {
-                            datum += reader.nextLine() + "\n";
-                        }
-                        
-                        reader.close();
-                        data = datum.split("-");
                         FileWriter writer = new FileWriter(this.usuariosPath);
                         
-                        
                         for (int i = 0; i < data.length; i++) {
-                            matcher = pattern.matcher(data[i]);
+                            matcher = clsH.match(id, "Identificacion", data[i]);
                             
                             
                             if (matcher.find()) {
@@ -368,32 +358,22 @@ public class clsAdministracion {
                                         break; 
                                 }
                                 
-                                for (int j = 0; j < user.length; j++) {  
-                                    if (j == user.length - 1) writer.write(user[j]);
-                                    else writer.write(user[j] + "\n");
-                                } 
+                                clsH.changeData(user, writer); 
                             } else {
-                                writer.write(data[i] + "-");
+                                if (i != data.length - 1) writer.write(data[i] + "-");
                             }
                             
                         }
                         writer.close();
                         break;
                     case 'd':
-                        datum = "";
-                        id = clsH.inputString("Digite la identificacón del usuario que desea desabilitar");
+                        id = clsH.inputString("Digite la identificacón del usuario que desea desabilitar"); 
+                        data = clsH.getData(this.usuariosPath);
                         
-                        Scanner readerDelete = new Scanner(new File(this.usuariosPath));
-                        Pattern regex = Pattern.compile(String.format("\\n?Identificacion\\:\\s%s", id));
                         
-                        while (readerDelete.hasNextLine()) {
-                            datum += readerDelete.nextLine() + "\n";
-                        }
-                        data = datum.split("-");
-                        
-                        FileWriter delete = new FileWriter(this.usuariosPath);
+                        FileWriter disable = new FileWriter(this.usuariosPath);
                         for (int i = 0; i < data.length; i++) {
-                            matcher = regex.matcher(data[i]);
+                            matcher = clsH.match(id, "Identificacion", data[i]);
                             if (matcher.find()) {
                                 user = data[i].split("\n");
                                 Boolean estado = !Boolean.valueOf(user[6].substring(15));
@@ -402,26 +382,16 @@ public class clsAdministracion {
                                 user[6] = "Deshabilitado: " + estado;
                                 clsH.showMessage("Usuario con identificación: " + id + " ha sido " + (estado ? "deshabilitado" : "habilitado"));
                                 
-                                for (int j = 0; j < user.length; j++) {  
-                                    if (j == user.length - 1) delete.write(user[j]);
-                                    else delete.write(user[j] + "\n");
-                                } 
+                                clsH.changeData(user, disable);
+                                 
                             } else {
-                                delete.write(data[i] + "-");
+                                if (i != data.length - 1) disable.write(data[i] + "-");
                             }
                         }
                         
-                        delete.close();
+                        disable.close();
                         break;
-                        
-                    case 'r':
-                        datum = "";
-                        Scanner read = new Scanner(new File(this.usuariosPath));
-                        while (read.hasNextLine()) {
-                            datum += read.nextLine() + "\n";
-                        }
-                        clsH.showMessage(new TextArea(datum));
-                        break;
+                   
                 }
 
             } catch (IOException e) {
@@ -435,8 +405,7 @@ public class clsAdministracion {
     
     public void balances() {
         clsHandler clsH = new clsHandler();
-
-        String dinero = "";
+        
         int opcion = 0;
         float saldoActual = 0, deposito = 0, retiro = 0.0f;
         char siguiente = ' ', siguiente2 = ' ';
@@ -463,7 +432,7 @@ public class clsAdministracion {
                             clsH.showMessage("El depósito debe ser mayor a 1000 colones");
                         }
                         siguiente = clsH.inputChar("Desea continuar: \nSi\nNo");
-                    } while (siguiente == 'S' && siguiente != 'N');
+                    } while (siguiente == 's' && siguiente != 'n');
                     break;
                 case 3:
                     do {
