@@ -32,7 +32,7 @@ public class clsAdministracion {
     
     
     public boolean getSesion() {
-        return this.sesion;
+            return this.sesion;
     }
     
     public void validacionContraseñaUsuario() {
@@ -59,7 +59,6 @@ public class clsAdministracion {
                 matcherContraseña = clsH.match(contraseña, "Contraseña", data[i]);
                 
                 if(matcherNombre.find() && matcherContraseña.find()) {
-                    //String[] usuario = data[i].split("\n");
                     clsH.showMessage("Bienvenido: " + nombre);
                     this.administrador = nombre;
                     bloqueado = true;
@@ -151,7 +150,7 @@ public class clsAdministracion {
                                        + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nMonto en la cuenta: 0"
                                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n-");
+                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n|");
                                        
                         dataBase.close();
                     } catch (IOException e) {
@@ -235,7 +234,7 @@ public class clsAdministracion {
                                 clsH.changeData(client, writer); 
                                 
                             } else {
-                                if (i != data.length - 1) writer.write(data[i] + "-");
+                                if (i != data.length - 1) writer.write(data[i] + "|");
                             }
 
                         }
@@ -256,7 +255,7 @@ public class clsAdministracion {
                         FileWriter delete = new FileWriter(this.clientesPath);
                         for (int i = 0; i < data.length; i++) {
                             matcher = clsH.match(id, "Identificacion", data[i]);
-                            if (!matcher.find() && i != data.length - 1 ) delete.write(data[i] + "-");
+                            if (!matcher.find() && i != data.length - 1 ) delete.write(data[i] + "|");
                             
                         }
 
@@ -268,7 +267,7 @@ public class clsAdministracion {
                     
                 case 'r':
                     data = clsH.getData(this.clientesPath);
-                    clsH.showMessage(new TextArea(String.join("\n-\n", data)));                        
+                    clsH.showMessage(new TextArea(String.join("\n|\n", data)));                        
                    
                     break;
                 }
@@ -319,7 +318,7 @@ public class clsAdministracion {
                                        + "\nContraseña: " + contraseña            
                                        + "\nPuesto: " + puesto            
                                        + "\nAño de ingreso: " + añoIngreso            
-                                       + "\nDeshabilitado: " + false + "\n-");            
+                                       + "\nDeshabilitado: " + false + "\n|");            
                         dataBase.close();
                         break;
                     case 'u':
@@ -328,10 +327,10 @@ public class clsAdministracion {
                         
                         
                         FileWriter writer = new FileWriter(this.usuariosPath);
+                        System.out.println(data[1]);
                         
                         for (int i = 0; i < data.length; i++) {
                             matcher = clsH.match(id, "Identificacion", data[i]);
-                            
                             
                             if (matcher.find()) {
                                 user = data[i].split("\n");
@@ -360,7 +359,7 @@ public class clsAdministracion {
                                 
                                 clsH.changeData(user, writer); 
                             } else {
-                                if (i != data.length - 1) writer.write(data[i] + "-");
+                                if (i != data.length - 1) writer.write(data[i] + "|");
                             }
                             
                         }
@@ -385,7 +384,7 @@ public class clsAdministracion {
                                 clsH.changeData(user, disable);
                                  
                             } else {
-                                if (i != data.length - 1) disable.write(data[i] + "-");
+                                if (i != data.length - 1) disable.write(data[i] + "|");
                             }
                         }
                         

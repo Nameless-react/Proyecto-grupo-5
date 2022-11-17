@@ -44,11 +44,11 @@ public class clsHandler {
     public String[] getData(String path) {
         String datum = "";
         try {
-            
             Scanner file = new Scanner(new File(path)); 
 
             while(file.hasNextLine()){
                 datum += file.nextLine() + "\n";
+                System.out.print(datum);
             }
 
             
@@ -56,13 +56,13 @@ public class clsHandler {
         } catch (IOException e) {
             this.showMessage("Error: " + e);
         }
-        return datum.split("-");
+        return datum.split("\\|");
     }
     
     public void changeData(String[] data, FileWriter file) {
         try {
             for (int j = 0; j < data.length; j++) {  
-                if (j == data.length - 1) file.write(data[j] + "\n-");
+                if (j == data.length - 1) file.write(data[j] + "\n|");
                 else file.write(data[j] + "\n");
             } 
             
