@@ -20,8 +20,8 @@ import java.util.Calendar;
  */
 public class clsAdministracion {
 
-    public String usuariosPath;
-    public String clientesPath;
+    private String usuariosPath;
+    private String clientesPath;
     public String administrador;
     private boolean sesion;
     
@@ -32,49 +32,70 @@ public class clsAdministracion {
     
     
     public boolean getSesion() {
-            return this.sesion;
+        return this.sesion;
     }
     
     public void validacionContraseñaUsuario() {
         clsHandler clsH = new clsHandler();
-        String nombre = "", contraseña;
+        String nombre = "", contraseña = "";
         
         int intentos = 0;
         boolean bloqueado = false;
+        boolean encontrado = false;
+        String user = "";
+        int posicion = -1;
         
-        //char opcion = ' ';
-        String[] data;
+        String[] data = clsH.getData(this.usuariosPath); 
+        Matcher matcherNombre;
+        Matcher matcherContraseña;
    
     
         do {
             nombre = clsH.inputString("Escriba su nombre de usuario: ");
-            contraseña = clsH.inputString("Escriba su contraseña: ");
-            data = clsH.getData(this.usuariosPath);    
-        
-            Matcher matcherNombre;
-            Matcher matcherContraseña;
+               
             
             for (int i = 0; i < data.length; i++) {                
                 matcherNombre = clsH.match(nombre, "Nombre", data[i]);             
-                matcherContraseña = clsH.match(contraseña, "Contraseña", data[i]);
                 
-                if(matcherNombre.find() && matcherContraseña.find()) {
-                    clsH.showMessage("Bienvenido: " + nombre);
-                    this.administrador = nombre;
-                    bloqueado = true;
-                    break;
-                } else {
-                    clsH.showMessage("Nombre de usuario o contraseña erronea");
-                    intentos++;
+                if (matcherNombre.find()) {
+                    user = data[i];
                     
-                    if(intentos == 3) {
-                        clsH.showMessage("Usuario bloqueado");
-                    }
+                    
+                    bloqueado = true;
                     break;
                 }
             }
             
+            if (!encontrado) {
+                clsH.showMessage("El usuario " + nombre + " no existe");
+                intentos++;
+                continue;
+            }
+
+            contraseña = clsH.inputString("Escriba su contraseña: ");
+            matcherContraseña = clsH.match(contraseña, "Contraseña", user);
+            if (!matcherContraseña.find()) {
+                if (intentos == 2) {
+                    bloqueado = true;
+                    data[posicion].split("\n")[6] = "Deshabilitado: true";
+                    try {
+                        clsH.changeData(data, new FileWriter(this.usuariosPath));
+                        
+                    } catch (IOException e) {
+                        clsH.showMessage("Error: " + e);
+                    }
+                    
+                }
+                
+                clsH.showMessage("Contraseña incorrecta");
+                intentos++;
+                continue;
+            }
             
+            
+            clsH.showMessage("Bienvenido(a): " + nombre);
+            this.administrador = nombre;
+
 
         } while (intentos < 3 && !bloqueado);
     }
@@ -327,7 +348,6 @@ public class clsAdministracion {
                         
                         
                         FileWriter writer = new FileWriter(this.usuariosPath);
-                        System.out.println(data[1]);
                         
                         for (int i = 0; i < data.length; i++) {
                             matcher = clsH.match(id, "Identificacion", data[i]);
