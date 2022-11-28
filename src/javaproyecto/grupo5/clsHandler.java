@@ -37,6 +37,10 @@ public class clsHandler {
         return Integer.parseInt(JOptionPane.showInputDialog(message));
     }
     
+    public double inputDouble(String message) {
+        return Double.parseDouble(JOptionPane.showInputDialog(message));
+    }
+    
     public float inputFloat(String message) {
         return Float.parseFloat(JOptionPane.showInputDialog(message));
     }
@@ -44,15 +48,19 @@ public class clsHandler {
     public String[] getData(String path) {
         String datum = "";
         try {
-            Scanner file = new Scanner(new File(path)); 
+            File file = new File(path);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
 
-            while(file.hasNextLine()){
-                datum += file.nextLine() + "\n";
-                System.out.print(datum);
+            Scanner scanner = new Scanner(file);
+
+            while(scanner.hasNextLine()){
+                datum += scanner.nextLine() + "\n";
             }
 
             
-            file.close();
+            scanner.close();
         } catch (IOException e) {
             this.showMessage("Error: " + e);
         }
