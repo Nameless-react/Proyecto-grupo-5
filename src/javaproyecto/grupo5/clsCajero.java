@@ -96,6 +96,7 @@ public class clsCajero {
                 return -1;
             }
         
+            this.setDinero(nuevosBilletes * 20000, 'd');
             return this.veinteMil += nuevosBilletes;
         } else {
             
@@ -104,6 +105,7 @@ public class clsCajero {
                 return -1;
             }
             
+            this.setDinero(nuevosBilletes * 20000, 'e');
             return this.veinteMil -= nuevosBilletes;
         }
     }
@@ -116,12 +118,14 @@ public class clsCajero {
                 return -1;
             }
             
+            this.setDinero(nuevosBilletes * 5000, 'd');
             return this.diezMil += nuevosBilletes;
         } else {
             if (this.diezMil - nuevosBilletes < 0) {
                 clsH.showMessage("La cantidad de billetes de diez mil no puede ser menor a 0");
                 return -1;
             }
+            this.setDinero(nuevosBilletes * 10000, 'e');
             return this.diezMil -= nuevosBilletes;
         }
     }
@@ -133,6 +137,7 @@ public class clsCajero {
                 clsH.showMessage("La cantidad de billetes de cinco mil no puede ser mayor a 400");
                 return -1;
             }
+            this.setDinero(nuevosBilletes * 5000, 'd');
             return this.cincoMil += nuevosBilletes;
             
         } else {
@@ -141,6 +146,7 @@ public class clsCajero {
                 return -1;
                 
             }
+            this.setDinero(nuevosBilletes * 5000, 'e');
             return this.cincoMil -= nuevosBilletes; 
         }        
     }
@@ -152,6 +158,7 @@ public class clsCajero {
                 clsH.showMessage("La cantidad de billetes de dos mil no puede ser mayor a 1000");
                 return -1;
             }
+            this.setDinero(nuevosBilletes * 2000, 'd');
             return this.dosMil += nuevosBilletes; 
                         
         } else {
@@ -159,6 +166,7 @@ public class clsCajero {
                 clsH.showMessage("La cantidad de billetes de dos mil no puede ser menor a 0");
                 return -1;
             }
+            this.setDinero(nuevosBilletes * 2000, 'e');
             return this.dosMil -= nuevosBilletes;   
         }      
     }
@@ -171,6 +179,7 @@ public class clsCajero {
                 return -1;
 
             }
+            this.setDinero(nuevosBilletes * 1000, 'd');
             return this.mil += nuevosBilletes;
             
         } else {
@@ -179,6 +188,7 @@ public class clsCajero {
                 return -1;
 
             }
+            this.setDinero(nuevosBilletes * 1000, 'e');
             return this.mil -= nuevosBilletes;   
         }
     }
