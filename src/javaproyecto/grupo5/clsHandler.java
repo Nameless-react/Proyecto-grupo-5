@@ -41,6 +41,10 @@ public class clsHandler {
         return Double.parseDouble(JOptionPane.showInputDialog(message));
     }
     
+    public long inputLong(String mensaje){
+        return Long.parseLong(JOptionPane.showInputDialog(mensaje));
+    }
+    
     public float inputFloat(String message) {
         return Float.parseFloat(JOptionPane.showInputDialog(message));
     }
@@ -83,5 +87,40 @@ public class clsHandler {
             String regex = String.format("\\n?%2$s\\:\\s%1$s\\n", matcher, identifier);
             Pattern pattern = Pattern.compile(regex);
             return pattern.matcher(input);      
+    }
+    
+    public String[] validar(String path) {
+        int contador = 0;
+        clsHandler clsH = new clsHandler();
+        String datos = "";
+        String[] data = this.getData(path);
+        boolean existIdentificacion = false;
+        String identificacion = "", contraseña = "", nombre = "";
+                
+        do {
+            if (contador == 1) {
+                if (identificacion.length() < 8) clsH.showMessage("La identificación debe tener 8 digitos o más");
+                if (contraseña.length() < 8) clsH.showMessage("La contraseña debe tener 8 digitos o más");
+                if (nombre.length() < 2) clsH.showMessage("Nombre invalido");
+            }
+            
+            identificacion = clsH.inputString("Ingrese su identificación:");
+            for (int i = 0; i < data.length; i++) {
+                existIdentificacion = this.match(identificacion, "Identificacion", data[i]).find();
+                if (existIdentificacion) {
+                    clsH.showMessage("Identificación ya existente, por favor digite una identificación diferente");
+                    break;
+                }
+            }
+            if (existIdentificacion) continue; 
+            
+            nombre = clsH.inputString("Ingrese su nombre");
+            contraseña = clsH.inputString("Ingrese la contraseña:");
+            
+            
+            contador++;
+        } while (identificacion.length() < 8 || nombre.length() < 2 || contraseña.length() < 8);
+        datos = identificacion + ":" + nombre + ":" + contraseña;
+        return datos.split("\\:");
     }
 }

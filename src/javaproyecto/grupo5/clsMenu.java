@@ -11,9 +11,14 @@ package javaproyecto.grupo5;
 public class clsMenu {
     public void menu() {
         int opcion = 0;
+        
         clsHandler clsH = new clsHandler();
+        clsCajero clsC = new clsCajero("cajero.txt");
         clsAdministracion clsA = new clsAdministracion("usuarios.txt", "clientes.txt");
         clsReportes clsR = new clsReportes();
+        
+        
+        clsC.initCajero();
         
         do {
             opcion = clsH.inputInt("Digite la opción que desea:"
@@ -32,17 +37,18 @@ public class clsMenu {
                     clsA.seguridad();
                     break;
                 case 3:
-                    clsA.ingresoClientes();
+                    clsA.ingresoClientes(clsR);
                     break;
                 case 4:
                     clsA.balances();
                     break;
                 case 5:
-                    clsR.ModeloReporteEstadistico();
+                    clsR.getusuariosCreados();
                     break;
                 case 6:
                     break;
             }
         } while (opcion != 6);
+        clsC.saveCajero();
     }
 }

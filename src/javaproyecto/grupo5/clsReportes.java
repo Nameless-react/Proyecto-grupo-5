@@ -4,36 +4,33 @@
  */
 package javaproyecto.grupo5;
 
+import java.awt.TextArea;
+
 /**
  *
  * @author joel
  */
 public class clsReportes {
-    public void reportesUsuario() {
+    private String[] clientesCreados = new String[1000];
+    private int numeroClientesCreado = 0;
+    
+    public void setusuariosCreados(String usuario) {
+        clientesCreados[numeroClientesCreado] = usuario;
+        this.numeroClientesCreado++;
+    }
+    
+    public void getusuariosCreados() {
+        clsHandler clsH = new clsHandler();
+        if(this.numeroClientesCreado == 0) {
+            clsH.showMessage("No se han creados nuevos clientes recientemente");
+            return;
+        } 
+        clsH.showMessage(new TextArea(String.join("\n", this.clientesCreados).replace("\\|", "\n").replace("null", "")));
         
     }
     
     public void reportesAdministador() {
         
-    }
+   }
   
- 
-   public void ModeloReporteEstadistico(){
-        clsHandler clsH = new clsHandler();
-       clsH.showMessage("En construcción");
- 
-        //try{
-        //    Modelo_Reporteestadistico = (new DefaultTableModel(null, new String[]{"nombre","identificacion","fechas","total de transacciones realizadss por el usuario",}){
-        //    class[] Types = new class []{
-        //        java.lang.String.class.java.lang.String.class,
-        //        java.lang.String.class.java.lang.String.class
-        //                );
-        //        boolean[]canEdit=new boolean []{
-        //            false,false,false,false
-        //                );
-        //        public Class getColumnClass(int columnIndex){
-        //} catch (IOExeption e) {
-        //       clsH.showMessage(e);  
-        //};
-    }
 }

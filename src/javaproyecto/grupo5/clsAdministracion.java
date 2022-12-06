@@ -22,7 +22,10 @@ public class clsAdministracion {
 
     private String usuariosPath;
     private String clientesPath;
+    
     public String administrador;
+    public String id;
+    
     private boolean sesion;
     
     public clsAdministracion (String usuariosPath, String clientesPath) {
@@ -37,71 +40,86 @@ public class clsAdministracion {
     
     public void validacionContraseñaUsuario() {
         clsHandler clsH = new clsHandler();
-        String nombre = "", contraseña = "";
+        String identificacion = "", contraseña = "";
+        char continuar = ' ';
         
-        int intentos = 0;
         boolean bloqueado = false;
         boolean encontrado = false;
-        String user = "";
+        String[] user = null;
         int posicion = -1;
         
         String[] data = clsH.getData(this.usuariosPath); 
-        Matcher matcherNombre;
+        boolean matcherIdentificacion;
         Matcher matcherContraseña;
    
     
         do {
-            nombre = clsH.inputString("Escriba su nombre de usuario: ");
+            identificacion = clsH.inputString("Escriba el número de identificación del usuario: ");
                
             
             for (int i = 0; i < data.length; i++) {                
-                matcherNombre = clsH.match(nombre, "Nombre", data[i]);             
+                matcherIdentificacion = clsH.match(identificacion, "Identificacion", data[i]).find();
+                if (!matcherIdentificacion) continue;
                 
-                if (matcherNombre.find()) {
-                    user = data[i];
-                    
-                    
-                    bloqueado = true;
+                user = data[i].split("\n");
+                if (Boolean.parseBoolean(user[6].substring(15)))  {
+                    clsH.showMessage("El usuario está bloqueado");
+                    return;
+                } else {
+                    posicion = i;
+                    encontrado = true;
                     break;
                 }
             }
             
             if (!encontrado) {
-                clsH.showMessage("El usuario " + nombre + " no existe");
-                intentos++;
+                clsH.showMessage("El usuario con número de identificación " + identificacion + " no existe");
+                continuar = clsH.inputChar("¿Desea continuar?"
+                        + "\ns) si"
+                        + "\nn) no");
                 continue;
             }
-
-            contraseña = clsH.inputString("Escriba su contraseña: ");
-            matcherContraseña = clsH.match(contraseña, "Contraseña", user);
-            if (!matcherContraseña.find()) {
-                if (intentos == 2) {
-                    bloqueado = true;
-                    data[posicion].split("\n")[6] = "Deshabilitado: true";
-                    try {
-                        clsH.changeData(data, new FileWriter(this.usuariosPath));
-                        
-                    } catch (IOException e) {
-                        clsH.showMessage("Error: " + e);
-                    }
-                    
-                }
+            
+            for (int i = 0; i < 3; i++) {
+                contraseña = clsH.inputString("Escriba su contraseña: ");
+                matcherContraseña = clsH.match(contraseña, "Contraseña", user[3] + "\n");
                 
-                clsH.showMessage("Contraseña incorrecta");
-                intentos++;
-                continue;
+                if (!matcherContraseña.find()) {
+                    clsH.showMessage("Contraseña incorrecta");
+                    if (i == 2) {
+                        
+                        user[6] = "Deshabilitado: true";
+                        try {
+                            FileWriter writer = new FileWriter(this.usuariosPath);
+                            for (int j = 0; j < data.length; j++) {
+                                if (posicion == j) clsH.changeData(user, writer); 
+                                else if (j != data.length - 1) writer.write(data[i] + "|");
+                            }
+                        
+                            writer.close();
+
+                        } catch (IOException e) {
+                            clsH.showMessage("Error: " + e);
+                        }
+                        bloqueado = true;
+                    }
+                } else {
+                    String nombre = user[2].split("\\:")[1].trim();
+                    clsH.showMessage("Bienvenido(a): " + nombre);
+                    this.administrador = nombre;
+                    this.id = identificacion;
+                    break;
+                }   
             }
             
             
-            clsH.showMessage("Bienvenido(a): " + nombre);
-            this.administrador = nombre;
-
-
-        } while (intentos < 3 && !bloqueado);
+            
+            break;
+        } while (!bloqueado && continuar != 'n');
     }
     
     
-    public void ingresoClientes() {
+    public void ingresoClientes(clsReportes clsR) {
         clsHandler clsH = new clsHandler();
         char option = ' ', cambio = ' ';
      
@@ -129,34 +147,75 @@ public class clsAdministracion {
             
             switch (option) {
                 case 'c':
-                    String identificacion = clsH.inputString("Ingrese su identificación:");
-                    String nombre = clsH.inputString("Ingrese su nombre");
-                    String contraseña = clsH.inputString("Ingrese la contraseña:");
-                    char sexo = clsH.inputChar("Ingrese su sexo:"
+                    char sexo = ' ', tipoCuenta = ' ', monedaCuenta = ' ';
+                    String[] verificados = clsH.validar(this.clientesPath);
+                    String identificacion = verificados[0], nombre = verificados[1], contraseña = verificados[2], telefono = "";
+                    
+                    do {
+                        sexo = clsH.inputChar("Ingrese su sexo:"
                             + "\n m) masculino"
                             + "\n f) femenino");
+                    } while (sexo != 'm' && sexo != 'f');
+
                     String nacimiento = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
                     String ingresos = clsH.inputString("Ingrese la cantidad de dinero que recibe:");
                     String residencia = clsH.inputString("Ingrese su lugar de residencia:");
                     String correo = clsH.inputString("Digite su correo electronico:");
-                    String telefono = clsH.inputString("Digite su numero de telefono:");
-                    char tipoCuenta = clsH.inputChar("¿Que tipo de cuenta desea?:"
+                    
+                    do { 
+                       telefono = clsH.inputString("Digite su número de teléfono:");
+                    } while (telefono.length() < 8);
+                    
+                    do {
+                        tipoCuenta = clsH.inputChar("¿Que tipo de cuenta desea?:"
                             + "\n c) corriente"
                             + "\n a) ahorros");
-                    char monedaCuenta = clsH.inputChar("¿Que tipo de moneda desea que tenga la cuenta?:"
+                    } while (tipoCuenta != 'c' && tipoCuenta != 'a');
+                    
+                    
+                    do {
+                        monedaCuenta = clsH.inputChar("¿Que tipo de moneda desea que tenga la cuenta?:"
                             + "\n d) dolares"
                             + "\n c) colones");
+
+                    } while (monedaCuenta != 'c' && monedaCuenta != 'd');
 
                     
                     try {
                         FileWriter dataBase = new FileWriter(this.clientesPath, true);
-                        String numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
-      
+                        data = clsH.getData(this.clientesPath);
+                        
+                        String numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) +
+                                " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) +
+                                " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
+                                " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
+                        
+                        String numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
+                        
+                        
+                        
                         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(Calendar.YEAR, +5);
                         
-                        dataBase.write("\nIdentificacion: " + identificacion
+                        //Hacer únicos los números de targetas y los números de cuentas bsncarias
+                        for (int i = 0; i < data.length; i++) {
+                            System.out.println(data[i]);
+                            if (data[i].length() < 2) continue;
+                            client = data[i].split("\n");
+                            if(client[13].substring(19).equals(numeroTargeta)) {
+                                numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
+                                i = 0;
+                            }
+                            
+                            if(client[12].substring(18).equals(numeroCuenta)) {
+                                numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
+                                i = 0;
+                            }
+                        }
+
+                        
+                        String usuario = "\nIdentificacion: " + identificacion
                                        + "\nNombre: " + nombre            
                                        + "\nContraseña: " + contraseña            
                                        + "\nSexo: " + sexo            
@@ -167,12 +226,16 @@ public class clsAdministracion {
                                        + "\nTeléfono: " + telefono            
                                        + "\nTipo de cuenta: " + tipoCuenta            
                                        + "\nMoneda de la cuenta: " + monedaCuenta            
-                                       + "\nNúmero de cuenta: " + (int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000))
+                                       + "\nNúmero de cuenta: " + numeroCuenta
                                        + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nMonto en la cuenta: 0"
                                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n|");
-                                       
+                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n|";
+                        
+                        dataBase.write(usuario);
+                             
+                        
+                        clsR.setusuariosCreados(usuario);
                         dataBase.close();
                     } catch (IOException e) {
                         clsH.showMessage("Error: " + e);
@@ -208,14 +271,25 @@ public class clsAdministracion {
 
                                 switch (cambio) {
                                     case 'n':
+                                        while(actualizado.length() <= 2) {
+                                            actualizado = clsH.inputString("Digite el dato actualizado");
+                                        }
                                         client[2] = "Nombre: " + actualizado;
                                         break;
 
                                     case 'c':
+                                        while(actualizado.length() < 8) {
+                                            actualizado = clsH.inputString("Digite el dato actualizado");
+                                        }
                                         client[3] = "Contraseña: " + actualizado;
                                         break;
 
                                     case 's':
+                                        while(actualizado.charAt(0) != 'm' && actualizado.charAt(0) != 'f') {
+                                            actualizado = clsH.inputString("Ingrese su sexo:"
+                                                                    + "\n m) masculino"
+                                                                    + "\n f) femenino");
+                                        }
                                         client[4] = "Sexo: " +  actualizado;
                                         break;
 
@@ -236,6 +310,9 @@ public class clsAdministracion {
                                         break;
 
                                     case 't':
+                                        while(actualizado.length() < 8) {
+                                            actualizado = clsH.inputString("Digite el dato actualizado");
+                                        }
                                         client[9] = "Teléfono: " +  actualizado;
                                         break;
 
@@ -267,7 +344,7 @@ public class clsAdministracion {
                     
                 case 'd':
                     
-                    id = clsH.inputString("Digite la identificacón del usuario que desea eliminar");
+                    id = clsH.inputString("Digite la identificacón del cliente que desea eliminar");
                     
                     try {
                         data = clsH.getData(this.clientesPath);
@@ -288,7 +365,7 @@ public class clsAdministracion {
                     
                 case 'r':
                     data = clsH.getData(this.clientesPath);
-                    clsH.showMessage(new TextArea(String.join("\n|\n", data)));                        
+                    clsH.showMessage(new TextArea(String.join("\n\n", data)));                        
                    
                     break;
                 }
@@ -309,7 +386,7 @@ public class clsAdministracion {
         
         do {
             if (!exitsDataBase.exists()) {
-                clsH.showMessage("El archivo usuarios no existe, no podemos procesar las peticiones");
+                clsH.showMessage("El archivo usuarios.txt no existe, no podemos procesar las peticiones");
                 return;
             }
 
@@ -324,11 +401,15 @@ public class clsAdministracion {
 
                 switch (option){
                     case 'c':
-                        String identificacion = clsH.inputString("Digite la identificación:");
-                        String nombre = clsH.inputString("Digite el nombre");
-                        String contraseña = clsH.inputString("Digite la contraseña:");
+                        String[] verificados = clsH.validar(this.usuariosPath);
+                        String identificacion = verificados[0], nombre = verificados[1], contraseña = verificados[2], añoIngreso = "";
+                        
+                        
                         String puesto = clsH.inputString("Digite el puesto de trabajo:");
-                        String añoIngreso = clsH.inputString("Digite el año de ingreso:");
+                        
+                        do {
+                            añoIngreso = clsH.inputString("Digite el año de ingreso:");
+                        } while (añoIngreso.length() != 4);
                         
                        
                         FileWriter dataBase = new FileWriter(this.usuariosPath, true);
@@ -364,15 +445,27 @@ public class clsAdministracion {
                            
                                 switch (cambio) {
                                     case 'n':
+                                        while (actualizado.length() <= 2) {
+                                             actualizado = clsH.inputString("Digite un nombre valido:");
+                                        }
+                                        
                                         user[2] = "Nombre: " + actualizado;
                                         break;
                                     case 'c':
+                                        while (actualizado.length() <= 8) {
+                                            actualizado = clsH.inputString("Digite una contraseña valida:");
+                                        }
+                                        
                                         user[3] = "Contraseña: " + actualizado;
                                         break;
                                     case 'p':
                                         user[4] = "Puesto: " +  actualizado;
                                         break;
                                     case 'a':
+                                        while (actualizado.length() != 4) {
+                                            actualizado = clsH.inputString("Digite una un año valido:");
+                                        }
+                                        
                                         user[5] = "Año de ingreso: " +  actualizado;
                                         break; 
                                 }
@@ -424,53 +517,156 @@ public class clsAdministracion {
     
     public void balances() {
         clsHandler clsH = new clsHandler();
-        
+
+        String dinero = "";
+        //Variables para el cajero
+        long billetes20 = 0, billetes10 = 0, billetes5 = 0, billetes2 = 0,
+                billetes1 = 0, cont20 = 0, cont10 = 0, cont5 = 0, cont2 = 0, cont1 = 0;
         int opcion = 0;
-        float saldoActual = 0, deposito = 0, retiro = 0.0f;
-        char siguiente = ' ', siguiente2 = ' ';
+        long saldoActual = 0, deposito = 0, retiro = 0;
+        char siguiente = ' ', siguiente222 = ' ', siguiente20 = ' ',
+                siguiente10 = ' ', siguiente5 = ' ', siguiente2 = ' ', siguiente1 = ' ';
+        String impresion2 = "", impresion3 = "";
 
         do {
-            opcion = clsH.inputInt("Por favor digite la opción que desea realizar: "
-                    + "\n1) Consulta de cuentas"
-                    + "\n2) Deposito"
-                    + "\n3) Retiro"
+            opcion = clsH.inputInt("Por favor digite la opcion que desea realizar: "
+                    + "\n1) Consulta de dinero en cajero"
+                    + "\n2) Depositar plata al cajero"
+                    + "\n3) Retiro de dinero"
                     + "\n4) Salir");
 
             switch (opcion) {
                 case 1:
-                    clsH.showMessage("El Saldo en su cuenta es de: " + saldoActual + " colones");
+                    clsH.showMessage("El Saldo en el cajero es de: ₡" + saldoActual + " colones");
                     break;
                 case 2:
                     do {
-                        deposito = clsH.inputFloat("Su saldo actual es de: " + saldoActual
-                                + " \nIngrese el monto que desea depositar: ");
-                        if (deposito >= 1000) {
-                            saldoActual = saldoActual + deposito;
-                            clsH.showMessage("El depósito se a realizado con exito \nEl saldo en su cuenta es de: " + saldoActual);
-                        } else {
-                            clsH.showMessage("El depósito debe ser mayor a 1000 colones");
-                        }
+                        do {
+                            billetes20 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                    + " \nCantidad Maxima = 1000 billetes\n"
+                                    + "Ingrese la cantidad de billetes de ₡20,000: ");
+                            if (billetes20 <= 1000) {
+                                cont20 += billetes20;
+                                billetes20 = billetes20 * 20000;
+                                saldoActual = saldoActual + billetes20;
+                                clsH.showMessage("El depósito se a realizado con exito "
+                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
+                            } else {
+                                clsH.showMessage("La cantidad ingresada supera el limite permito");
+                            }
+                            siguiente20 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                        } while (siguiente20 != 'N');
+                        do {
+                            billetes10 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                    + " \nCantidad Maxima = 2000 billetes\n"
+                                    + " Ingrese la cantidad de billetes de ₡10,000: ");
+                            if (billetes10 <= 2000) {
+                                cont20 += billetes10;
+                                billetes10 = billetes10 * 10000;
+                                saldoActual = saldoActual + billetes10;
+                                clsH.showMessage("El depósito se a realizado con exito "
+                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
+                            } else {
+                                clsH.showMessage("La cantidad ingresada supera el limite permito");
+                            }
+                            siguiente10 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                        } while (siguiente10 != 'N');
+                        do {
+                            billetes5 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                    + " \nCantidad Maxima = 2000 billetes\n"
+                                    + " Ingrese la cantidad de billetes de ₡5,000: ");
+                            if (billetes5 <= 2000) {
+                                cont20 += billetes5;
+                                billetes5 = billetes5 * 5000;
+                                saldoActual = saldoActual + billetes5;
+                                clsH.showMessage("El depósito se a realizado con exito "
+                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
+                            } else {
+                                clsH.showMessage("La cantidad ingresada supera el limite permito");
+                            }
+                            siguiente5 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                        } while (siguiente5 != 'N');
+                        do {
+                            billetes2 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                    + " \nCantidad Maxima = 5000 billetes\n"
+                                    + " Ingrese la cantidad de billetes de ₡2,000: ");
+                            if (billetes2 <= 5000) {
+                                cont20 += billetes2;
+                                billetes2 = billetes2 * 2000;
+                                saldoActual = saldoActual + billetes2;
+                                clsH.showMessage("El depósito se a realizado con exito "
+                                        + "\nEl saldo en su cuenta es de: ₡" + saldoActual + " colones");
+                            } else {
+                                clsH.showMessage("La cantidad ingresada supera el limite permito");
+                            }
+                            siguiente2 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                        } while (siguiente2 != 'N');
+                        do {
+                            billetes1 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                    + " \nCantidad Maxima = 5000 billetes\n"
+                                    + " Ingrese la cantidad de billetes de ₡1,000: ");
+                            if (billetes1 <= 5000) {
+                                cont20 += billetes1;
+                                billetes1 = billetes1 * 1000;
+                                saldoActual = saldoActual + billetes1;
+                                clsH.showMessage("El depósito se a realizado con exito "
+                                        + "\nEl saldo en su cuenta es de: ₡" + saldoActual + " colones");
+                            } else {
+                                clsH.showMessage("La cantidad ingresada supera el limite permito");
+                            }
+                            siguiente1 = clsH.inputChar("Desea continuar: \nSi\nNo");
+                        } while (siguiente1 != 'N');
+
                         siguiente = clsH.inputChar("Desea continuar: \nSi\nNo");
-                    } while (siguiente == 's' && siguiente != 'n');
+                    } while (siguiente == 'S' && siguiente != 'N');
+                    impresion2 = "************DEPOSITO************\n"
+                            + "TOTAL DEPOSITADO: " + saldoActual + "\n"
+                            + "*************************************\n"
+                            + "TOTAL BILLETES DE ₡20,0000: " + billetes20 + "\n"
+                            + "TOTAL BILLETES DE ₡10,000: " + billetes10 + "\n"
+                            + "TOTAL BILLETES DE ₡5,000: " + billetes5 + "\n"
+                            + "TOTAL BILLETES DE ₡5,000: " + billetes2 + "\n"
+                            + "TOTAL BILLETES DE ₡2,000: " + billetes1 + "\n"
+                            + "************************************\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡20,0000: " + cont20+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡10,0000: " + cont10+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡5,0000: " + cont5+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡2,0000: " + cont2+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡1,0000: " + cont1+"\n";
+                    clsH.showMessage(new TextArea(impresion2));
                     break;
                 case 3:
                     do {
-                        retiro = clsH.inputFloat("Su saldo actual es de: " + saldoActual + " \nIngrese el monto que desea retirar: ");
+                        retiro = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
+                                + "\nIngrese el monto que desea retirar: ");
                         if (retiro > saldoActual) {
                             clsH.showMessage("No cuenta con suficiente dinero en la cuenta");
                         } else if (retiro >= 1000) {
                             saldoActual -= retiro;
-                            clsH.showMessage("El retiro de su cuenta se ah realizado con exito \nEl saldo en su cuenta es de: " + saldoActual);
+                            clsH.showMessage("El retiro de su cuenta se ah realizado con exito "
+                                    + "\nEl saldo en su cuenta es de: ₡" + saldoActual);
                         } else {
                             clsH.showMessage("El retiro debe ser mayor a 1000 colones");
                         }
-                        siguiente2 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                    } while (siguiente2 == 'S' && siguiente2 != 'N');
+                        impresion3 = "************RETIRO************\n"
+                            + "TOTAL EN LA CUENTA: "
+                            + "*************************************\n"
+                            + "TOTAL RETIRADO: "
+                            + "*************************************\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡20,0000: " + cont20+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡10,0000: " + cont10+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡5,0000: " + cont5+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡2,0000: " + cont2+"\n"
+                            + "TOTAL DE BILLETES INGRESADOS DE ₡1,0000: " + cont1+"\n";
+                        clsH.showMessage(new TextArea(impresion3));
+                        siguiente222 = clsH.inputChar("Volver al menu principal: \nSi\nNo");
+                    } while (siguiente222 == 'S' && siguiente222 != 'N');
+                    
                     break;
                 case 4:
                     break;
                 default:
-                    clsH.showMessage("La opcion que dijito es incorrecta");
+                    clsH.showMessage("La opcion que digito es incorrecta");
                     break;
             }
         } while (opcion != 4);
