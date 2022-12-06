@@ -105,7 +105,7 @@ public class clsAdministracion {
                     }
                 } else {
                     String nombre = user[2].split("\\:")[1].trim();
-                    clsH.showMessage("Bienvenido(a): " + nombre);
+                    clsH.showMessage("Bienvenido(a) " + nombre);
                     this.administrador = nombre;
                     this.id = identificacion;
                     break;

@@ -31,6 +31,6 @@ public class clsUsuario {
     
     public void reportes() {
         clsReportes clsR = new clsReportes();
-        clsR.reportesUsuario();
+       
     }
 }
