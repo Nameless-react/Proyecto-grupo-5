@@ -11,6 +11,8 @@ import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -55,6 +57,36 @@ public class clsHandler {
             File file = new File(path);
             if (!file.exists()) {
                 file.createNewFile();
+                FileWriter write = new FileWriter(path);
+                if (path.contains("clientes.txt")) {
+                    write.write("Identificacion: 10\n" +
+                                "Nombre: juan\n" +
+                                "Contraseña: admin1234\n" +
+                                "Sexo: m\n" +
+                                "Fecha de nacimiento: 3/2/1999\n" +
+                                "Ingresos: 123456789\n" +
+                                "Residencia: san cristobal\n" +
+                                "Correo: frgthyjui654\n" +
+                                "Teléfono: 2345687654\n" +
+                                "Tipo de cuenta: c\n" +
+                                "Moneda de la cuenta: c\n" +
+                                "Número de cuenta: 71709346\n" +
+                                "Número de targeta: 6205 8741 4648 2102\n" +
+                                "Monto en la cuenta: 0\n" +
+                                "CVV: 556\n" +
+                                "Fecha de vencimiento: 16/11/2027\n" +
+                                "|");
+                    write.close();
+                } else if (path.contains("usuarios.txt")) {
+                    write.write("Identificacion: 2\n" +
+                                "Nombre: gerardo\n" +
+                                "Contraseña: admin1234\n" +
+                                "Puesto: ertyhju\n" +
+                                "Año de ingreso: 2010\n" +
+                                "Deshabilitado: false\n" +
+                                "|");
+                    write.close();
+                }
             }
 
             Scanner scanner = new Scanner(file);
@@ -114,7 +146,7 @@ public class clsHandler {
             }
             if (existIdentificacion) continue; 
             
-            nombre = clsH.inputString("Ingrese su nombre");
+            nombre = clsH.inputString("Ingrese su nombre").toLowerCase();
             contraseña = clsH.inputString("Ingrese la contraseña:");
             
             

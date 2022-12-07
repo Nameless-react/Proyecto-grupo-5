@@ -10,6 +10,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.FileWriter;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.time.Period;
 import java.util.regex.Matcher;
 import java.util.Calendar;
 
@@ -157,10 +159,29 @@ public class clsAdministracion {
                             + "\n f) femenino");
                     } while (sexo != 'm' && sexo != 'f');
 
-                    String nacimiento = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
+                    String nacimiento;
+                    do {
+                        
+                        nacimiento = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
+                        if (nacimiento.length() < 10) continue;
+                        String[] format = nacimiento.split("/");
+                        
+                        LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
+                        Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
+                        
+                        if (mayorEdad.getYears() < 18) {
+                            clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
+                            continue;
+                        }
+                    
+                        break;
+                    } while (true);
+                    
+                    
                     String ingresos = clsH.inputString("Ingrese la cantidad de dinero que recibe:");
                     String residencia = clsH.inputString("Ingrese su lugar de residencia:");
                     String correo = clsH.inputString("Digite su correo electronico:");
+                    
                     
                     do { 
                        telefono = clsH.inputString("Digite su número de teléfono:");
@@ -200,11 +221,15 @@ public class clsAdministracion {
                         
                         //Hacer únicos los números de targetas y los números de cuentas bsncarias
                         for (int i = 0; i < data.length; i++) {
-                            System.out.println(data[i]);
+                            
                             if (data[i].length() < 2) continue;
+                            
                             client = data[i].split("\n");
                             if(client[13].substring(19).equals(numeroTargeta)) {
-                                numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
+                                numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
                                 i = 0;
                             }
                             
@@ -230,11 +255,12 @@ public class clsAdministracion {
                                        + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nMonto en la cuenta: 0"
                                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime()) + "\n|";
+                                       + "\nPing: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                       + "\nFecha de vencimiento: " + date.format(calendar.getTime())
+                                       + "\nBloqueado: false\n|";
+                        
                         
                         dataBase.write(usuario);
-                             
-                        
                         clsR.setusuariosCreados(usuario);
                         dataBase.close();
                     } catch (IOException e) {
@@ -294,6 +320,19 @@ public class clsAdministracion {
                                         break;
 
                                     case 'a':
+                                        int primero = 0;
+                                        while (true) {
+                                            if (actualizado.length() >= 10 && primero == 0) break;
+                                            actualizado = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
+                                            
+                                            if (actualizado.length() >= 10) continue; 
+                                            String[] format = actualizado.split("/");
+                                            LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
+                                            Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
+
+                                            if (mayorEdad.getYears() < 18) clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
+                                            primero++;
+                                        }
                                         client[5] = "Fecha de nacimiento: " +  actualizado;
                                         break;
 
@@ -515,160 +554,154 @@ public class clsAdministracion {
     
     
     
-    public void balances() {
-        clsHandler clsH = new clsHandler();
-
-        String dinero = "";
+    public void balances(clsCajero clsC) {
+         clsHandler clsH = new clsHandler();
+         
+         
         //Variables para el cajero
-        long billetes20 = 0, billetes10 = 0, billetes5 = 0, billetes2 = 0,
-                billetes1 = 0, cont20 = 0, cont10 = 0, cont5 = 0, cont2 = 0, cont1 = 0;
+        int billetesVeinte = 0, billetesDiez = 0, billetesCinco = 0, billetesDos = 0, billetesMil = 0;
+        
+        
         int opcion = 0;
-        long saldoActual = 0, deposito = 0, retiro = 0;
-        char siguiente = ' ', siguiente222 = ' ', siguiente20 = ' ',
-                siguiente10 = ' ', siguiente5 = ' ', siguiente2 = ' ', siguiente1 = ' ';
-        String impresion2 = "", impresion3 = "";
+        int exito = 0;
+        long deposito = 0;
+        
+        char continuar = ' ', siguiente = ' ';
+        String impresion = "";
 
         do {
             opcion = clsH.inputInt("Por favor digite la opcion que desea realizar: "
                     + "\n1) Consulta de dinero en cajero"
-                    + "\n2) Depositar plata al cajero"
-                    + "\n3) Retiro de dinero"
-                    + "\n4) Salir");
+                    + "\n2) Depositar dinero al cajero"
+                    + "\n3) Salir");
 
             switch (opcion) {
                 case 1:
-                    clsH.showMessage("El Saldo en el cajero es de: ₡" + saldoActual + " colones");
+                    clsH.showMessage("El Saldo en el cajero es de: ₡" + clsC.getDinero() + " colones"
+                            + "\nCantidad de billetes de veinte mil: " + clsC.getVeinteMil()
+                            + "\nCantidad de billetes de diez mil: " + clsC.getDiezMil()
+                            + "\nCantidad de billetes de cinco mil: " + clsC.getCincoMil()
+                            + "\nCantidad de billetes de dos mil: " + clsC.getDosMil()
+                            + "\nCantidad de billetes de mil: " + clsC.getMil());
                     break;
                 case 2:
                     do {
-                        do {
-                            billetes20 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                    + " \nCantidad Maxima = 1000 billetes\n"
-                                    + "Ingrese la cantidad de billetes de ₡20,000: ");
-                            if (billetes20 <= 1000) {
-                                cont20 += billetes20;
-                                billetes20 = billetes20 * 20000;
-                                saldoActual = saldoActual + billetes20;
-                                clsH.showMessage("El depósito se a realizado con exito "
-                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
-                            } else {
-                                clsH.showMessage("La cantidad ingresada supera el limite permito");
-                            }
-                            siguiente20 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                        } while (siguiente20 != 'N');
-                        do {
-                            billetes10 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                    + " \nCantidad Maxima = 2000 billetes\n"
-                                    + " Ingrese la cantidad de billetes de ₡10,000: ");
-                            if (billetes10 <= 2000) {
-                                cont20 += billetes10;
-                                billetes10 = billetes10 * 10000;
-                                saldoActual = saldoActual + billetes10;
-                                clsH.showMessage("El depósito se a realizado con exito "
-                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
-                            } else {
-                                clsH.showMessage("La cantidad ingresada supera el limite permito");
-                            }
-                            siguiente10 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                        } while (siguiente10 != 'N');
-                        do {
-                            billetes5 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                    + " \nCantidad Maxima = 2000 billetes\n"
-                                    + " Ingrese la cantidad de billetes de ₡5,000: ");
-                            if (billetes5 <= 2000) {
-                                cont20 += billetes5;
-                                billetes5 = billetes5 * 5000;
-                                saldoActual = saldoActual + billetes5;
-                                clsH.showMessage("El depósito se a realizado con exito "
-                                        + "\nEl saldo en su cuenta es de: " + saldoActual + " colones");
-                            } else {
-                                clsH.showMessage("La cantidad ingresada supera el limite permito");
-                            }
-                            siguiente5 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                        } while (siguiente5 != 'N');
-                        do {
-                            billetes2 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                    + " \nCantidad Maxima = 5000 billetes\n"
-                                    + " Ingrese la cantidad de billetes de ₡2,000: ");
-                            if (billetes2 <= 5000) {
-                                cont20 += billetes2;
-                                billetes2 = billetes2 * 2000;
-                                saldoActual = saldoActual + billetes2;
-                                clsH.showMessage("El depósito se a realizado con exito "
-                                        + "\nEl saldo en su cuenta es de: ₡" + saldoActual + " colones");
-                            } else {
-                                clsH.showMessage("La cantidad ingresada supera el limite permito");
-                            }
-                            siguiente2 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                        } while (siguiente2 != 'N');
-                        do {
-                            billetes1 = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                    + " \nCantidad Maxima = 5000 billetes\n"
-                                    + " Ingrese la cantidad de billetes de ₡1,000: ");
-                            if (billetes1 <= 5000) {
-                                cont20 += billetes1;
-                                billetes1 = billetes1 * 1000;
-                                saldoActual = saldoActual + billetes1;
-                                clsH.showMessage("El depósito se a realizado con exito "
-                                        + "\nEl saldo en su cuenta es de: ₡" + saldoActual + " colones");
-                            } else {
-                                clsH.showMessage("La cantidad ingresada supera el limite permito");
-                            }
-                            siguiente1 = clsH.inputChar("Desea continuar: \nSi\nNo");
-                        } while (siguiente1 != 'N');
+                        billetesVeinte = clsH.inputInt("El saldo del cajero es de : ₡" + clsC.getDinero() + " colones"
+                                + "\nCantidad de billetes de veinte mil " + clsC.getVeinteMil()
+                                + "\nIngrese la cantidad de billetes de ₡20 000: ");
 
-                        siguiente = clsH.inputChar("Desea continuar: \nSi\nNo");
-                    } while (siguiente == 'S' && siguiente != 'N');
-                    impresion2 = "************DEPOSITO************\n"
-                            + "TOTAL DEPOSITADO: " + saldoActual + "\n"
+                        exito = clsC.setVeinteMil(billetesVeinte, 'd');
+
+                        if (exito != -1){
+                            clsH.showMessage("El depósito se a realizado con exito "
+                                    + "\nLa cantidad de billetes de veinte mil es de " + clsC.getVeinteMil());
+
+                            deposito += (billetesVeinte * 20000);                                
+                        }
+                        continuar = clsH.inputChar("Desea continuar: "
+                                + "\ns) Si"
+                                + "\nn) No");
+                        if (continuar == 'n') break;
+                        
+                        
+                        
+
+                        billetesDiez = clsH.inputInt("El saldo del cajero es de : ₡" + clsC.getDinero() + " colones"
+                                + "\nCantidad de billetes de diez mil " + clsC.getDiezMil()
+                                + "\nIngrese la cantidad de billetes de ₡10 000: ");
+
+
+                        exito = clsC.setDiezMil(billetesDiez, 'd');
+                        if (exito != -1) {
+                            clsH.showMessage("El depósito se a realizado con exito "
+                                    + "\nLa cantidad de billetes de diez mil es de " + clsC.getDiezMil());
+
+                            deposito += (billetesDiez * 10000);
+
+                        }
+                        continuar = clsH.inputChar("Desea continuar: "
+                                + "\ns) Si"
+                                + "\nn) No");
+                        if (continuar == 'n') break;
+                        
+                            
+                        
+                        
+                        
+                        billetesCinco = clsH.inputInt("El saldo del cajero es de : ₡" + clsC.getDinero() + " colones"
+                                + "\nCantidad de billetes cinco  mil " + clsC.getCincoMil()
+                                + "\nIngrese la cantidad de billetes de ₡5 000: ");
+
+
+                        exito = clsC.setCincoMil(billetesCinco, 'd');
+                        if (exito != -1) {
+                            clsH.showMessage("El depósito se a realizado con exito "
+                                    + "\nLa cantidad de billetes de cinco mil es de " + clsC.getCincoMil());
+
+                            deposito += (billetesCinco * 5000);
+                        }
+                        continuar = clsH.inputChar("Desea continuar: "
+                                + "\ns) Si"
+                                + "\nn) No");
+                        if (continuar == 'n') break;
+                        
+                        
+                        
+                        
+                        billetesDos = clsH.inputInt("El saldo del cajero es de : ₡" + clsC.getDinero() + " colones"
+                                + "\nCantidad de billetes cinco  mil " + clsC.getDosMil()
+                                + "\nIngrese la cantidad de billetes de ₡2 000: ");
+
+                       exito = clsC.setDosMil(billetesDos, 'd');
+
+                       if (exito != -1) {
+                            clsH.showMessage("El depósito se a realizado con exito "
+                                 + "\nLa cantidad de billetes de dos mil es de " + clsC.getDosMil());
+
+                            deposito += (billetesDos * 2000);
+                       }
+                        continuar = clsH.inputChar("Desea continuar: "
+                                + "\ns) Si"
+                                + "\nn) No");
+                        if (continuar == 'n') break;
+                        
+                        
+                        
+                        
+                        billetesMil = clsH.inputInt("El saldo del cajero es de : ₡" + clsC.getDinero() + " colones"
+                                + "\nCantidad de billetes cinco  mil " + clsC.getMil()
+                                + "\nIngrese la cantidad de billetes de ₡1 000: ");
+
+                        exito = clsC.setMil(billetesMil, 'd');
+                        if (exito != -1) {
+                            clsH.showMessage("El depósito se a realizado con exito "
+                                + "\nLa cantidad de billetes de mil es de " + clsC.getMil());
+
+                            deposito += (billetesMil * 1000);                                
+                        }
+                        
+                        continuar = clsH.inputChar("¿Desea volver a hacer un deposito?"
+                                + "\ns) Si"
+                                + "\nn) No");
+                    } while (continuar != 'n');
+                    
+                    if(deposito == 0) break;
+                    impresion = "************DEPOSITO************\n"
+                            + "TOTAL DEPOSITADO: " + clsC.getDinero() + "\n"
                             + "*************************************\n"
-                            + "TOTAL BILLETES DE ₡20,0000: " + billetes20 + "\n"
-                            + "TOTAL BILLETES DE ₡10,000: " + billetes10 + "\n"
-                            + "TOTAL BILLETES DE ₡5,000: " + billetes5 + "\n"
-                            + "TOTAL BILLETES DE ₡5,000: " + billetes2 + "\n"
-                            + "TOTAL BILLETES DE ₡2,000: " + billetes1 + "\n"
-                            + "************************************\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡20,0000: " + cont20+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡10,0000: " + cont10+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡5,0000: " + cont5+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡2,0000: " + cont2+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡1,0000: " + cont1+"\n";
-                    clsH.showMessage(new TextArea(impresion2));
+                            + "TOTAL BILLETES DE ₡20 000: " + billetesVeinte + "\n"
+                            + "TOTAL BILLETES DE ₡10 000: " + billetesDiez + "\n"
+                            + "TOTAL BILLETES DE ₡5 000: " + billetesCinco + "\n"
+                            + "TOTAL BILLETES DE ₡2 000: " + billetesDos + "\n"
+                            + "TOTAL BILLETES DE ₡1 000: " + billetesMil + "\n";
+                    clsH.showMessage(new TextArea(impresion));
                     break;
                 case 3:
-                    do {
-                        retiro = clsH.inputLong("Su saldo actual es de: ₡" + saldoActual + " colones"
-                                + "\nIngrese el monto que desea retirar: ");
-                        if (retiro > saldoActual) {
-                            clsH.showMessage("No cuenta con suficiente dinero en la cuenta");
-                        } else if (retiro >= 1000) {
-                            saldoActual -= retiro;
-                            clsH.showMessage("El retiro de su cuenta se ah realizado con exito "
-                                    + "\nEl saldo en su cuenta es de: ₡" + saldoActual);
-                        } else {
-                            clsH.showMessage("El retiro debe ser mayor a 1000 colones");
-                        }
-                        impresion3 = "************RETIRO************\n"
-                            + "TOTAL EN LA CUENTA: "
-                            + "*************************************\n"
-                            + "TOTAL RETIRADO: "
-                            + "*************************************\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡20,0000: " + cont20+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡10,0000: " + cont10+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡5,0000: " + cont5+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡2,0000: " + cont2+"\n"
-                            + "TOTAL DE BILLETES INGRESADOS DE ₡1,0000: " + cont1+"\n";
-                        clsH.showMessage(new TextArea(impresion3));
-                        siguiente222 = clsH.inputChar("Volver al menu principal: \nSi\nNo");
-                    } while (siguiente222 == 'S' && siguiente222 != 'N');
-                    
-                    break;
-                case 4:
                     break;
                 default:
                     clsH.showMessage("La opcion que digito es incorrecta");
                     break;
             }
-        } while (opcion != 4);
+        } while (opcion != 3);
     }
 }

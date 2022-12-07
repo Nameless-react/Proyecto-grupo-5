@@ -16,7 +16,7 @@ public class clsMenu {
         clsCajero clsC = new clsCajero("cajero.txt");
         clsAdministracion clsA = new clsAdministracion("usuarios.txt", "clientes.txt");
         clsReportes clsR = new clsReportes();
-        
+        clsUsuario clsU = new clsUsuario("clientes.txt");
         
         clsC.initCajero();
         
@@ -27,7 +27,8 @@ public class clsMenu {
                     + "\n 3) CRUD de clientes"
                     + "\n 4) balances"
                     + "\n 5) reportes"
-                    + "\n 6) salir");
+                    + "\n 6) extracción de dinero"
+                    + "\n 7) salir");
             
             switch(opcion) {
                 case 1:
@@ -40,15 +41,18 @@ public class clsMenu {
                     clsA.ingresoClientes(clsR);
                     break;
                 case 4:
-                    clsA.balances();
+                    clsA.balances(clsC);
                     break;
                 case 5:
                     clsR.getusuariosCreados();
                     break;
                 case 6:
+                    clsU.extraccionDinero(clsC);
+                    break;
+                case 7:
                     break;
             }
-        } while (opcion != 6);
+        } while (opcion != 7);
         clsC.saveCajero();
     }
 }
