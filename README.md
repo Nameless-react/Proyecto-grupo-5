@@ -2,7 +2,6 @@
 
 Berlin Cordero Brenes <br>
 Joel García Rojas <br>
-Kristin Gonzalez Peña <br>
 Danny Jimenez Palma <br>
 Mauricio Hidalgo Garzon
 
