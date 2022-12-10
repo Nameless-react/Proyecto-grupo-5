@@ -22,13 +22,14 @@ public class clsMenu {
         
         do {
             opcion = clsH.inputInt("Digite la opción que desea:"
-                    + "\n 1) validación de usuarios"
+                    + "\n 1) inicio sesión usuarios"
                     + "\n 2) CRUD de usuarios"
                     + "\n 3) CRUD de clientes"
                     + "\n 4) balances"
                     + "\n 5) reportes"
                     + "\n 6) extracción de dinero"
-                    + "\n 7) salir");
+                    + "\n 7) inicio sesión clientes"
+                    + "\n 8) salir");
             
             switch(opcion) {
                 case 1:
@@ -50,9 +51,12 @@ public class clsMenu {
                     clsU.extraccionDinero(clsC);
                     break;
                 case 7:
+                    clsU.ingresoCajero();
+                    break;
+                case 8:
                     break;
             }
-        } while (opcion != 7);
+        } while (opcion != 8);
         clsC.saveCajero();
     }
 }

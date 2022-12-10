@@ -95,7 +95,7 @@ public class clsAdministracion {
                             FileWriter writer = new FileWriter(this.usuariosPath);
                             for (int j = 0; j < data.length; j++) {
                                 if (posicion == j) clsH.changeData(user, writer); 
-                                else if (j != data.length - 1) writer.write(data[i] + "|");
+                                else if (j != data.length - 1) writer.write(data[j] + "|");
                             }
                         
                             writer.close();
@@ -163,7 +163,7 @@ public class clsAdministracion {
                     do {
                         
                         nacimiento = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
-                        if (nacimiento.length() < 10) continue;
+                        if (!nacimiento.matches("[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}")) continue;
                         String[] format = nacimiento.split("/");
                         
                         LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
@@ -255,7 +255,7 @@ public class clsAdministracion {
                                        + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nMonto en la cuenta: 0"
                                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                       + "\nPing: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                       + "\nPing: " + (int) (Math.floor(Math.random() * (1000 - 100) + 100))
                                        + "\nFecha de vencimiento: " + date.format(calendar.getTime())
                                        + "\nBloqueado: false\n|";
                         
@@ -311,7 +311,7 @@ public class clsAdministracion {
                                         break;
 
                                     case 's':
-                                        while(actualizado.charAt(0) != 'm' && actualizado.charAt(0) != 'f') {
+                                        while(actualizado.toLowerCase().charAt(0) != 'm' && actualizado.toLowerCase().charAt(0) != 'f') {
                                             actualizado = clsH.inputString("Ingrese su sexo:"
                                                                     + "\n m) masculino"
                                                                     + "\n f) femenino");
@@ -322,16 +322,29 @@ public class clsAdministracion {
                                     case 'a':
                                         int primero = 0;
                                         while (true) {
-                                            if (actualizado.length() >= 10 && primero == 0) break;
+                                            if (actualizado.matches("[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}") && primero == 0) {
+                                                String[] format = actualizado.split("/");
+                                                LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
+                                                Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
+                                                if (mayorEdad.getYears() < 18) {
+                                                    clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
+                                                    primero++;
+                                                    continue;
+                                                } else break;
+                                            }
                                             actualizado = clsH.inputString("Ingrese su fecha de nacimiento formato dd/mm/aa:");
                                             
-                                            if (actualizado.length() >= 10) continue; 
-                                            String[] format = actualizado.split("/");
-                                            LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
-                                            Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
+                                            if (actualizado.matches("[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}")) {
+                                                String[] format = actualizado.split("/");
+                                                LocalDate cumpleaños = LocalDate.of(Integer.parseInt(format[2]), Integer.parseInt(format[1]), Integer.parseInt(format[0]));
+                                                Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
+                                                if (mayorEdad.getYears() < 18) {
+                                                    clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
+                                                    continue;
+                                                } else break;
+                                            }
 
-                                            if (mayorEdad.getYears() < 18) clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
-                                            primero++;
+                                            
                                         }
                                         client[5] = "Fecha de nacimiento: " +  actualizado;
                                         break;
@@ -356,10 +369,23 @@ public class clsAdministracion {
                                         break;
 
                                     case 'p':
+                                        while (actualizado.toLowerCase().charAt(0) != 'c' && actualizado.toLowerCase().charAt(0) != 'a') {
+                                            actualizado = clsH.inputString("¿Que tipo de cuenta desea?:"
+                                                + "\n c) corriente"
+                                                + "\n a) ahorros");
+                                        }
+
+
                                         client[10] = "Tipo de cuenta: " +  actualizado;
                                         break;
                                         
                                     case 'm':
+                                        while (actualizado.toLowerCase().charAt(0) != 'c' && actualizado.toLowerCase().charAt(0) != 'd'){
+                                            actualizado = clsH.inputString("¿Que tipo de moneda desea que tenga la cuenta?:"
+                                                + "\n d) dolares"
+                                                + "\n c) colones");
+
+                                        }
                                         client[11] = "Moneda de la cuenta: " +  actualizado;
                                         break;
                                         

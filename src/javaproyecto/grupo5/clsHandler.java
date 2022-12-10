@@ -5,14 +5,11 @@
 package javaproyecto.grupo5;
 
 import java.awt.TextArea;
-import java.io.File;
 import java.util.Scanner;
 import javax.swing.JOptionPane;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.time.LocalDate;
-import java.time.Period;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 /**
@@ -59,7 +56,7 @@ public class clsHandler {
                 file.createNewFile();
                 FileWriter write = new FileWriter(path);
                 if (path.contains("clientes.txt")) {
-                    write.write("Identificacion: 10\n" +
+                    write.write("\nIdentificacion: 10\n" +
                                 "Nombre: juan\n" +
                                 "Contraseña: admin1234\n" +
                                 "Sexo: m\n" +
@@ -115,8 +112,8 @@ public class clsHandler {
         }  
     }
     
-    public Matcher match(String matcher, String identifier, String input) {
-            String regex = String.format("\\n?%2$s\\:\\s%1$s\\n", matcher, identifier);
+    public Matcher match(String matcher, String identificador, String input) {
+            String regex = String.format("\\n?%2$s\\:\\s%1$s\\n", matcher, identificador);
             Pattern pattern = Pattern.compile(regex);
             return pattern.matcher(input);      
     }
@@ -154,5 +151,75 @@ public class clsHandler {
         } while (identificacion.length() < 8 || nombre.length() < 2 || contraseña.length() < 8);
         datos = identificacion + ":" + nombre + ":" + contraseña;
         return datos.split("\\:");
+    }
+    
+    public String[] inicioSesion(String pregunta, String[] data, String identificador, boolean matcherUsuario, String error) {
+        int posicion = -1;
+        String[] usuario = new String[2];
+        String cuenta = "";
+        String[] user = null;
+        boolean encontrado = false;
+        char continuar = ' ';
+        
+        cuenta = this.inputString(pregunta).toLowerCase();
+        for (int i = 0; i < data.length; i++) {                
+            matcherUsuario = this.match(cuenta, identificador, data[i]).find();
+            if (!matcherUsuario) continue;
+
+            user = data[i].split("\n");
+            usuario[0] = data[i];
+            if (Boolean.parseBoolean(user[18].substring(11)))  {
+                this.showMessage("El usuario está bloqueado");
+                usuario[1] = String.valueOf(posicion);
+                return usuario;
+            } else {
+                posicion = i;
+                usuario[1] = String.valueOf(posicion);
+                encontrado = true;
+                break;
+            }
+        }
+        
+        if (!encontrado) {
+                this.showMessage(error);
+                continuar = this.inputChar("¿Desea continuar?"
+                        + "\ns) si"
+                        + "\nn) no");
+                if (continuar == 's') this.inicioSesion(pregunta, data, identificador, matcherUsuario, error);
+                usuario[1] = String.valueOf(posicion);
+            }
+        return usuario;
+    }
+    
+    public boolean verificarInicioSesion(String pregunta, int posicion, String[] user, String error, String clientesPath, String[] data, String identificador, int numerolinea) {
+        String ping = "";
+        Matcher match;
+        
+        for (int i = 0; i < 3; i++) {
+            ping = this.inputString(pregunta);
+            match = this.match(ping, identificador, user[numerolinea] + "\n");
+
+            if (!match.find()) {
+                this.showMessage(error);
+                if (i == 2) {
+
+                    user[18] = "Bloqueado: true";
+                    try {
+                        FileWriter writer = new FileWriter(clientesPath);
+                        for (int j = 0; j < data.length; j++) {
+                            if (posicion == j) this.changeData(user, writer); 
+                            else if (j != data.length - 1) writer.write(data[j] + "|");
+                        }
+
+                        writer.close();
+
+                    } catch (IOException e) {
+                        this.showMessage("Error: " + e);
+                    }
+                    return false;
+                }
+            } else return true;
+        }
+        return false;
     }
 }

@@ -16,13 +16,44 @@ import java.util.regex.Matcher;
 public class clsUsuario {
     private String nombre;
     private String cuenta;
-    private String saldo;
+    private long saldo;
     private String cedula;
     private String clientesPath;
+    private char monedaCuenta;
     
     public clsUsuario(String clientesPath) {
         this.clientesPath = clientesPath;
     }
+    
+    public String getmonedaCuenta() {
+        if (this.monedaCuenta == 'c') return "colones";
+        else if(this.monedaCuenta == 'd') return "dolares";
+        return "";
+    }
+    public String getNombre() {
+        return this.nombre;
+    }
+    public String getCuenta() {
+        return this.cuenta;
+    }
+    public long getSaldo() {
+        return this.saldo;
+    }
+    
+    public long setSaldo(int dinero, char tipo) {
+        clsHandler clsH = new clsHandler();
+        
+        if (tipo == 'd') {
+            return this.saldo += dinero;
+        }
+        
+        if (this.saldo - dinero < 0) {
+            clsH.showMessage("Fondos insuficientes");
+            return -1;
+        }
+        return this.saldo -= dinero;
+    }
+    
     
     public void ingresoCajero() {
         //Aún no funciona faltan cosas
@@ -32,92 +63,78 @@ public class clsUsuario {
         
         boolean bloqueado = false;
         boolean encontrado = false;
+        boolean verificado = false;
         String[] user = null;
         int posicion = -1;
         
+        String[] datosInicio;
         String[] data = clsH.getData(this.clientesPath); 
-        boolean matcherIdentificacion;
-        Matcher matcherContraseña;
+        boolean matcherUsuario = false;
+        
    
     
         do {
             metodoInicioSesion = clsH.inputChar("Digite la manera en la que quiere iniciar sesión"
-                    + "c) Contraseña y nombre de usuario"
-                    + "n) Número de cuenta y ping"
-                    + "t) Número de targeta y ping");
+                    + "\nc) nombre de usuario y contraseña"
+                    + "\nn) Número de cuenta y ping"
+                    + "\nt) Número de targeta y ping"
+                    + "\ns) salir");
             
             switch (metodoInicioSesion) {
                 case 'c':
-                    usuario = clsH.inputString("Escriba su nombre de usuario: ");
+                    datosInicio = clsH.inicioSesion("Escriba su nombre de usuario: ", data, "Nombre", matcherUsuario, "El usuario no existe");
+                    if (Integer.parseInt(datosInicio[1]) == -1) continue;
                     
+                    user = datosInicio[0].split("\n");
+                    posicion = Integer.parseInt(datosInicio[1]);
+                    
+                    verificado = clsH.verificarInicioSesion("Digite su contraseña", posicion, user, "Contraseña incorrecta", this.clientesPath, data, "Contraseña", 3);
+                    if (verificado) {
+                        String nombre = user[2].split("\\:")[1].trim();
+                        clsH.showMessage("Bienvenido(a) " + nombre);
+                        this.nombre = nombre;
+                        this.cedula = user[1].split("\\:")[1].trim();
+                        this.cuenta = user[12].split("\\:")[1].trim();
+                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                    }
                     break;
                 case 'n':
+                    datosInicio = clsH.inicioSesion("Digite su número de cuenta: ", data, "Número de cuenta", matcherUsuario, "El número de cuenta no existe");
+                    if (Integer.parseInt(datosInicio[1]) == -1) continue;
+                    user = datosInicio[0].split("\n");
+                    posicion = Integer.parseInt(datosInicio[1]);
                     
+                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 16);
+                    if (verificado) {
+                        String nombre = user[2].split("\\:")[1].trim();
+                        clsH.showMessage("Bienvenido(a) " + nombre);
+                        this.nombre = nombre;
+                        this.cedula = user[1].split("\\:")[1].trim();
+                        this.cuenta = user[12].split("\\:")[1].trim();
+                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                    }
                     break;
                 case 't':
+                    datosInicio = clsH.inicioSesion("Digite su número de targeta: ", data, "Número de targeta", matcherUsuario, "El número de targeta no existe");
+                    if (Integer.parseInt(datosInicio[1]) == -1) continue;
+                    user = datosInicio[0].split("\n");
+                    posicion = Integer.parseInt(datosInicio[1]);
                     
+                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 16);
+                    if (verificado) {
+                        String nombre = user[2].split("\\:")[1].trim();
+                        clsH.showMessage("Bienvenido(a) " + nombre);
+                        this.nombre = nombre;
+                        this.cedula = user[1].split("\\:")[1].trim();
+                        this.cuenta = user[12].split("\\:")[1].trim();
+                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                    }
+                    break;
+                case 's':
                     break;
                 default:
                     clsH.showMessage("Opción invalida");
             }
-            
-               
-            
-            for (int i = 0; i < data.length; i++) {                
-                matcherIdentificacion = clsH.match(usuario, "Identificacion", data[i]).find();
-                if (!matcherIdentificacion) continue;
-                
-                user = data[i].split("\n");
-                if (Boolean.parseBoolean(user[6].substring(15)))  {
-                    clsH.showMessage("El usuario está bloqueado");
-                    return;
-                } else {
-                    posicion = i;
-                    encontrado = true;
-                    break;
-                }
-            }
-            
-            if (!encontrado) {
-                clsH.showMessage("El usuario " + usuario + " no existe");
-                continuar = clsH.inputChar("¿Desea continuar?"
-                        + "\ns) si"
-                        + "\nn) no");
-                continue;
-            }
-            
-            for (int i = 0; i < 3; i++) {
-                contraseña = clsH.inputString("Escriba su contraseña: ");
-                matcherContraseña = clsH.match(contraseña, "Contraseña", user[3] + "\n");
-                
-                if (!matcherContraseña.find()) {
-                    clsH.showMessage("Contraseña incorrecta");
-                    if (i == 2) {
-                        
-                        user[18] = "Bloqueado: true";
-                        try {
-                            FileWriter writer = new FileWriter(this.clientesPath);
-                            for (int j = 0; j < data.length; j++) {
-                                if (posicion == j) clsH.changeData(user, writer); 
-                                else if (j != data.length - 1) writer.write(data[i] + "|");
-                            }
-                        
-                            writer.close();
-
-                        } catch (IOException e) {
-                            clsH.showMessage("Error: " + e);
-                        }
-                        bloqueado = true;
-                    }
-                } else {
-                    String nombre = user[2].split("\\:")[1].trim();
-                    clsH.showMessage("Bienvenido(a) " + nombre);
-                    this.nombre = nombre;
-                    
-                    break;
-                }   
-            }
-            
             
             
             break;
