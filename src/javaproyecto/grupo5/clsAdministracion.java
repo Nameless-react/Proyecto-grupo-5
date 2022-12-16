@@ -24,20 +24,12 @@ public class clsAdministracion {
 
     private String usuariosPath;
     private String clientesPath;
-    
-    public String administrador;
-    public String id;
-    
-    private boolean sesion;
+    private String administrador;
+    private String id;
     
     public clsAdministracion (String usuariosPath, String clientesPath) {
         this.usuariosPath = usuariosPath;
         this.clientesPath = clientesPath;
-    } 
-    
-    
-    public boolean getSesion() {
-        return this.sesion;
     }
     
     public void validacionContraseñaUsuario() {
@@ -128,11 +120,12 @@ public class clsAdministracion {
         String id = "";
         File exitsDataBase = new File(this.usuariosPath);
         
+        String[] especificacionesCuenta;
         String[] data;
-        String[] client;
+        String[] client = null;
         
         
-        Matcher matcher;
+        boolean matcher;
         do {
             if (!exitsDataBase.exists()) {
                 clsH.showMessage("El archivo usuarios no existe, no podemos procesar las peticiones");
@@ -141,9 +134,9 @@ public class clsAdministracion {
             
             option = clsH.inputChar("Digite la opción que desea:"
                     + "\n c) ingresar cliente"
+                    + "\n r) Mostrar lista de clientes"
                     + "\n u) modificar cliente"
                     + "\n d) eliminar cliente"
-                    + "\n r) Mostrar lista de clientes"
                     + "\n s) salir");
             
             
@@ -187,20 +180,10 @@ public class clsAdministracion {
                        telefono = clsH.inputString("Digite su número de teléfono:");
                     } while (telefono.length() < 8);
                     
-                    do {
-                        tipoCuenta = clsH.inputChar("¿Que tipo de cuenta desea?:"
-                            + "\n c) corriente"
-                            + "\n a) ahorros");
-                    } while (tipoCuenta != 'c' && tipoCuenta != 'a');
                     
-                    
-                    do {
-                        monedaCuenta = clsH.inputChar("¿Que tipo de moneda desea que tenga la cuenta?:"
-                            + "\n d) dolares"
-                            + "\n c) colones");
-
-                    } while (monedaCuenta != 'c' && monedaCuenta != 'd');
-
+                    especificacionesCuenta = clsH.especificacionesCuenta().split("\\|");
+                    tipoCuenta = especificacionesCuenta[0].charAt(0);
+                    monedaCuenta = especificacionesCuenta[1].charAt(0);
                     
                     try {
                         FileWriter dataBase = new FileWriter(this.clientesPath, true);
@@ -214,32 +197,17 @@ public class clsAdministracion {
                         String numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
                         
                         
-                        
+                        //Hacer que la fecha de expiración de la targeta a partir del dia en que se proceso la solicitud en 5 años
                         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
                         Calendar calendar = Calendar.getInstance();
                         calendar.add(Calendar.YEAR, +5);
                         
-                        //Hacer únicos los números de targetas y los números de cuentas bsncarias
-                        for (int i = 0; i < data.length; i++) {
-                            
-                            if (data[i].length() < 2) continue;
-                            
-                            client = data[i].split("\n");
-                            if(client[13].substring(19).equals(numeroTargeta)) {
-                                numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
-                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
-                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
-                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
-                                i = 0;
-                            }
-                            
-                            if(client[12].substring(18).equals(numeroCuenta)) {
-                                numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
-                                i = 0;
-                            }
-                        }
-
-                        
+                        //Hacer únicos los números de targetas y los números de cuentas bancarias
+                       String[] datosBancarios = clsH.generarDatosBancariosUnicos(data, numeroTargeta, numeroCuenta);
+                       numeroTargeta = datosBancarios[1]; 
+                       numeroCuenta = datosBancarios[0];
+                       
+                       
                         String usuario = "\nIdentificacion: " + identificacion
                                        + "\nNombre: " + nombre            
                                        + "\nContraseña: " + contraseña            
@@ -249,15 +217,17 @@ public class clsAdministracion {
                                        + "\nResidencia: " + residencia            
                                        + "\nCorreo: " + correo            
                                        + "\nTeléfono: " + telefono            
-                                       + "\nTipo de cuenta: " + tipoCuenta            
-                                       + "\nMoneda de la cuenta: " + monedaCuenta            
-                                       + "\nNúmero de cuenta: " + numeroCuenta
-                                       + "\nNúmero de targeta: " + numeroTargeta
-                                       + "\nMonto en la cuenta: 0"
-                                       + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                       + "\nBloqueado: false"
                                        + "\nPing: " + (int) (Math.floor(Math.random() * (1000 - 100) + 100))
+                                       + "\nCuentas:"
+                                       + "\nNúmero de cuenta: " + numeroCuenta
+                                       + "\nMonto en la cuenta: 0"
+                                       + "\nTipo de cuenta: " + tipoCuenta            
+                                       + "\nMoneda de la cuenta: " + monedaCuenta
+                                       + "\nNúmero de targeta: " + numeroTargeta
                                        + "\nFecha de vencimiento: " + date.format(calendar.getTime())
-                                       + "\nBloqueado: false\n|";
+                                       + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                       + "\n\\\\n|";
                         
                         
                         dataBase.write(usuario);
@@ -276,30 +246,31 @@ public class clsAdministracion {
 
 
                         for (int i = 0; i < data.length; i++) {
-                            matcher = clsH.match(id, "Identificacion", data[i]);  
-
-                            if (matcher.find()) {
+                            matcher = clsH.match(id, "Identificacion", data[i]).find();
+                            if (matcher) {
+                                String actualizado = "";
                                 client = data[i].split("\n");
-
+                                
+                                
                                 cambio = clsH.inputChar("¿Que desea cambiar?"
                                                                 + "\n n) Nombre"
                                                                 + "\n c) Contraseña"
-                                                                + "\n m) Tipo de moneda"
-                                                                + "\n p) Tipo de cuenta"
                                                                 + "\n t) Teléfono"
                                                                 + "\n e) Correo electronico"
                                                                 + "\n s) Sexo"
                                                                 + "\n i) Ingresos"
                                                                 + "\n r) Residencia"
                                                                 + "\n a) Fecha de nacimiento"
-                                                                + "\n d) Monto en la cuenta");
-                                String actualizado = clsH.inputString("Digite el dato actualizado:");
+                                                                + "\n b) Bloqueado"
+                                                                + "\n d) Cuentas");
+                                if (cambio != 'd') actualizado = clsH.inputString("Digite el dato actualizado:");
 
                                 switch (cambio) {
                                     case 'n':
                                         while(actualizado.length() <= 2) {
                                             actualizado = clsH.inputString("Digite el dato actualizado");
                                         }
+                                        actualizado = actualizado.toUpperCase().charAt(0) + actualizado.substring(1);
                                         client[2] = "Nombre: " + actualizado;
                                         break;
 
@@ -340,7 +311,6 @@ public class clsAdministracion {
                                                 Period mayorEdad = Period.between(cumpleaños, LocalDate.now());
                                                 if (mayorEdad.getYears() < 18) {
                                                     clsH.showMessage("No podemos brindarle nuestros servicios a personas menores de edad");
-                                                    continue;
                                                 } else break;
                                             }
 
@@ -367,30 +337,59 @@ public class clsAdministracion {
                                         }
                                         client[9] = "Teléfono: " +  actualizado;
                                         break;
-
-                                    case 'p':
-                                        while (actualizado.toLowerCase().charAt(0) != 'c' && actualizado.toLowerCase().charAt(0) != 'a') {
-                                            actualizado = clsH.inputString("¿Que tipo de cuenta desea?:"
-                                                + "\n c) corriente"
-                                                + "\n a) ahorros");
-                                        }
-
-
-                                        client[10] = "Tipo de cuenta: " +  actualizado;
-                                        break;
-                                        
-                                    case 'm':
-                                        while (actualizado.toLowerCase().charAt(0) != 'c' && actualizado.toLowerCase().charAt(0) != 'd'){
-                                            actualizado = clsH.inputString("¿Que tipo de moneda desea que tenga la cuenta?:"
-                                                + "\n d) dolares"
-                                                + "\n c) colones");
-
-                                        }
-                                        client[11] = "Moneda de la cuenta: " +  actualizado;
-                                        break;
-                                        
                                     case 'd':
-                                        client[14] = "Monto en la cuenta: " +  actualizado;
+                                        char generarCuenta = clsH.inputChar("¿Desea generar otra cuenta para el cliente con " + client[1].split("\\:")[1].trim() + "?"
+                                                + "\ns) si"
+                                                + "\nn) no");
+                                        if (generarCuenta == 'n') continue;
+                                        
+                                        String[] cuentas = clsH.getCuentas(client);
+                                        String actualizacionCuentas = String.join("\n", client);
+                                        
+                                        especificacionesCuenta = clsH.especificacionesCuenta().split("\\|");
+                                        
+                                        String numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) +
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) +
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) + 
+                                        " " + (int) (Math.floor(Math.random() * (9000 - 1000)) + 1000);
+
+                                        String numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
+
+                                        //CVV 
+                                        //Hacer que la fecha de expiración de la targeta a partir del dia en que se proceso la solicitud en 5 años
+                                        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+                                        Calendar calendar = Calendar.getInstance();
+                                        calendar.add(Calendar.YEAR, +5);
+
+                                        //Hacer únicos los números de targetas y los números de cuentas bancarias
+                                        String[] datosBancarios = clsH.generarDatosBancariosUnicos(data, numeroTargeta, numeroCuenta);
+                                        numeroTargeta = datosBancarios[1]; 
+                                        numeroCuenta = datosBancarios[0];
+                                        //actualizacionCuentas += "\nNúmero de cuenta: " + numeroCuenta
+                                        //                        + "\nMonto de cuenta: 0"
+                                        //                        + "\nTipo de cuenta: " + especificacionesCuenta[0]
+                                        //                        + "\nMoneda de la cuenta: " + especificacionesCuenta[1]
+                                        //                        + "\nNúmero de targeta: " + numeroTargeta
+                                        //                        + "\nFecha de vencimiento: " + date.format(calendar.getTime())
+                                        //                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                        //                        + "\n\\";
+                                        
+                                        client[client.length - 1] = "\\\nNúmero de cuenta: " + numeroCuenta
+                                                                + "\nMonto de cuenta: 0"
+                                                                + "\nTipo de cuenta: " + especificacionesCuenta[0]
+                                                                + "\nMoneda de la cuenta: " + especificacionesCuenta[1]
+                                                                + "\nNúmero de targeta: " + numeroTargeta
+                                                                + "\nFecha de vencimiento: " + date.format(calendar.getTime())
+                                                                + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
+                                                                + "\n\\";  
+                                        break; 
+                                    case 'b':
+                                        while (!"true".equals(actualizado) && !"false".equals(actualizado)) {
+                                            actualizado = clsH.inputString("Que desea hacer:"
+                                                    + "true) bloquear cliente"
+                                                    + "false) desbloquear cliente");
+                                        }
+                                        client[10] = "Bloqueado: " +  actualizado;
                                         break; 
                                 }
 
@@ -417,8 +416,8 @@ public class clsAdministracion {
 
                         FileWriter delete = new FileWriter(this.clientesPath);
                         for (int i = 0; i < data.length; i++) {
-                            matcher = clsH.match(id, "Identificacion", data[i]);
-                            if (!matcher.find() && i != data.length - 1 ) delete.write(data[i] + "|");
+                            matcher = clsH.match(id, "Identificacion", data[i]).find();
+                            if (!matcher && i != data.length - 1 ) delete.write(data[i] + "|");
                             
                         }
 
@@ -434,6 +433,7 @@ public class clsAdministracion {
                    
                     break;
                 }
+                
         } while (option != 's');
     }
     
@@ -568,7 +568,6 @@ public class clsAdministracion {
                         
                         disable.close();
                         break;
-                   
                 }
 
             } catch (IOException e) {
@@ -582,9 +581,6 @@ public class clsAdministracion {
     
     public void balances(clsCajero clsC) {
          clsHandler clsH = new clsHandler();
-         
-         
-        //Variables para el cajero
         int billetesVeinte = 0, billetesDiez = 0, billetesCinco = 0, billetesDos = 0, billetesMil = 0;
         
         
@@ -649,7 +645,6 @@ public class clsAdministracion {
                                 + "\ns) Si"
                                 + "\nn) No");
                         if (continuar == 'n') break;
-                        
                             
                         
                         
@@ -725,7 +720,7 @@ public class clsAdministracion {
                 case 3:
                     break;
                 default:
-                    clsH.showMessage("La opcion que digito es incorrecta");
+                    clsH.showMessage("La opcion que digito no es valida");
                     break;
             }
         } while (opcion != 3);

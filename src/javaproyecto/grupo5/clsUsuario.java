@@ -56,7 +56,6 @@ public class clsUsuario {
     
     
     public void ingresoCajero() {
-        //Aún no funciona faltan cosas
         clsHandler clsH = new clsHandler();
         String usuario = "", contraseña = "";
         char continuar = ' ', metodoInicioSesion = ' ';
@@ -76,58 +75,63 @@ public class clsUsuario {
         do {
             metodoInicioSesion = clsH.inputChar("Digite la manera en la que quiere iniciar sesión"
                     + "\nc) nombre de usuario y contraseña"
-                    + "\nn) Número de cuenta y ping"
+                    + "\nn) Número de cuenta y ping"    
                     + "\nt) Número de targeta y ping"
                     + "\ns) salir");
             
             switch (metodoInicioSesion) {
                 case 'c':
-                    datosInicio = clsH.inicioSesion("Escriba su nombre de usuario: ", data, "Nombre", matcherUsuario, "El usuario no existe");
+                    datosInicio = clsH.inicioSesion("Escriba su nombre de usuario: ", data, "Nombre", matcherUsuario, "El usuario no existe", "");
                     if (Integer.parseInt(datosInicio[1]) == -1) continue;
                     
                     user = datosInicio[0].split("\n");
                     posicion = Integer.parseInt(datosInicio[1]);
                     
-                    verificado = clsH.verificarInicioSesion("Digite su contraseña", posicion, user, "Contraseña incorrecta", this.clientesPath, data, "Contraseña", 3);
+                    verificado = clsH.verificarInicioSesion("Digite su contraseña", posicion, user, "Contraseña incorrecta", this.clientesPath, data, "Contraseña", 3, "");
                     if (verificado) {
                         String nombre = user[2].split("\\:")[1].trim();
                         clsH.showMessage("Bienvenido(a) " + nombre);
                         this.nombre = nombre;
+                        
                         this.cedula = user[1].split("\\:")[1].trim();
-                        this.cuenta = user[12].split("\\:")[1].trim();
-                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                        String[] cuentas = clsH.getCuentas(user);
+                        String[] cuenta = clsH.selection(cuentas).split("\n");
+                        this.saldo = Long.parseLong(cuenta[1]);
+                        this.cuenta = cuenta[0];
+                        System.out.println(this.cuenta);
+                        System.out.println(this.saldo);
                     }
                     break;
                 case 'n':
-                    datosInicio = clsH.inicioSesion("Digite su número de cuenta: ", data, "Número de cuenta", matcherUsuario, "El número de cuenta no existe");
+                    datosInicio = clsH.inicioSesion("Digite su número de cuenta: ", data, "Número de cuenta", matcherUsuario, "El número de cuenta no existe", "bancarios");
                     if (Integer.parseInt(datosInicio[1]) == -1) continue;
                     user = datosInicio[0].split("\n");
                     posicion = Integer.parseInt(datosInicio[1]);
                     
-                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 16);
+                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 11, "bancarios");
                     if (verificado) {
                         String nombre = user[2].split("\\:")[1].trim();
                         clsH.showMessage("Bienvenido(a) " + nombre);
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
-                        this.cuenta = user[12].split("\\:")[1].trim();
-                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                        this.cuenta = datosInicio[2].split("\\:")[1].trim();
+                        this.saldo = Long.parseLong(datosInicio[3].split("\\:")[1].trim());
                     }
                     break;
                 case 't':
-                    datosInicio = clsH.inicioSesion("Digite su número de targeta: ", data, "Número de targeta", matcherUsuario, "El número de targeta no existe");
+                    datosInicio = clsH.inicioSesion("Digite su número de targeta: ", data, "Número de targeta", matcherUsuario, "El número de targeta no existe", "bancarios");
                     if (Integer.parseInt(datosInicio[1]) == -1) continue;
                     user = datosInicio[0].split("\n");
                     posicion = Integer.parseInt(datosInicio[1]);
                     
-                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 16);
+                    verificado = clsH.verificarInicioSesion("Digite su número de ping", posicion, user, "Ping incorrecto", this.clientesPath, data, "Ping", 11, "bancarios");
                     if (verificado) {
                         String nombre = user[2].split("\\:")[1].trim();
                         clsH.showMessage("Bienvenido(a) " + nombre);
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
-                        this.cuenta = user[12].split("\\:")[1].trim();
-                        this.saldo = Long.parseLong(user[14].split("\\:")[1].trim());
+                        this.cuenta = datosInicio[2].split("\\:")[1].trim();
+                        this.saldo = Long.parseLong(datosInicio[3].split("\\:")[1].trim());
                     }
                     break;
                 case 's':
@@ -149,8 +153,7 @@ public class clsUsuario {
         clsHandler clsH = new clsHandler();
 
         char continuar = ' ';
-        int retiroUsuario = 0, contador = 0, contVeinteMil = 0, contDiesMil = 0,
-                contCincoMil = 0, contDosMil = 0, contMil = 0;
+        int retiroUsuario = 0, contador = 0, contVeinteMil = 0, contDiesMil = 0, contCincoMil = 0, contDosMil = 0, contMil = 0;
         int veinteMil = 0, diesMil = 0, cincoMil = 0, dosMil = 0, mil = 0;
         String impresion = "";
 
@@ -244,7 +247,7 @@ public class clsUsuario {
             if (mil > 0) {
                 int monto = mil * 1000;
                 if (clsC.getMil() - mil < 0) {
-                    montoRestante = montoRestante - monto + Math.abs(clsC.getMil() - mil) * 1000;
+                    montoRestante -=  monto + Math.abs(clsC.getMil() - mil) * 1000;
                     mil = clsC.getMil();
                     impresion += mil + " Billetes de ₵1000\n";
                     clsC.setMil(clsC.getMil(), 'M');
@@ -267,44 +270,70 @@ public class clsUsuario {
         } while (continuar != 'n');
     }
     
-    public void transferenciasDinero(long saldocuentaorigen,String cuentaorigen) {
-        
-        long montodetransferencia;
-        String cuentadestino;
-        long saldocuentadestino = 0L;
-        Matcher cuentaMatch;
-
+    public void transferenciasDinero() {
         clsHandler clsH = new clsHandler();
-
-        String[] Data = clsH.getData(this.clientesPath);
-
-        cuentadestino = clsH.inputString("Ingrese el numero de cuenta de destino de la transferencia");
-        montodetransferencia = clsH.inputLong("Ingrese el monto de la transferencia");
-        boolean existecuentaorigen = false;
-
+        String[] data = clsH.getData(this.clientesPath);
         
-        try {
+        long montoTransferencia = 0L;
+        String cuentaDestino;
+        long saldocuentadestino = 0L;
+        boolean cuentaDestinoMatch;
+        String[] cuentas;
+        
+        cuentaDestino = clsH.inputString("Ingrese el número de cuenta a la que se le va a envíar la transferencia");
+        boolean existeCuentaDestino = false;
+
+        for (int i = 0; i < data.length; i++) {
+            String[] usuario = data[i].split("\n");
+            cuentas = clsH.getCuentas(usuario);
             
-            FileWriter writer = new FileWriter("clientes.txt");
-            for (int i = 0; i < Data.length; i++) {
-                cuentaMatch = clsH.match(cuentadestino, "Numero de cuenta", Data[i]);
-                if (cuentaMatch.find()) {
-                    saldocuentaorigen -= montodetransferencia;
-
-                    saldocuentadestino += montodetransferencia;
-                    String[] usuarios = Data[i].split("\n");
-                    for (int j = 0; j < usuarios.length; j++) {
-                         if ((usuarios[j].contains("Numero de cuenta: " + cuentaorigen))) {
-                            usuarios[j] = String.valueOf(saldocuentaorigen);
-                        }
-
+            for (int j = 0; j < cuentas.length; j++) {
+                cuentaDestinoMatch = clsH.match(cuentaDestino, "Número de cuenta", cuentas[j]).find();
+                if (cuentaDestinoMatch) {
+                    String[] cuenta = cuentas[j].split("\n");
+                    
+                    this.saldo = 1000000;
+                    existeCuentaDestino = true;
+                    montoTransferencia = clsH.inputLong("Ingrese el monto que desea transferir: ");
+                    if(this.saldo - montoTransferencia < 0) {
+                        clsH.showMessage("Fondos insuficientes");
+                        return;
                     }
-                    clsH.changeData(Data, writer);
+                    
+                    this.saldo -= montoTransferencia;
+                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
+                    cuentas[j] = String.join("\n", cuenta) + "\n";
+                    cuentas = String.join("\\", cuentas).split("\n");
+                    
+                    
+                    for (int k = 14; k < usuario.length; k++) {
+                        usuario[k] = cuentas[k - 13];
+                    }
+                    
+                    try {
+                        FileWriter writer = new FileWriter(this.clientesPath);
+                        for (int k = 0; k < data.length; k++) {
+                           if (i == k) clsH.changeData(usuario, writer); 
+                            else if (k != data.length - 1) writer.write(data[k] + "|");
+                            
+                        }
+                        writer.close();
+                    } catch (IOException e) {
+                        clsH.showMessage("Error: " + e);
+                    }
                 }
             }
-
-        } catch (IOException e) {
-            clsH.showMessage("error intente de nuevo");
         }
+        
+        if (!existeCuentaDestino) {
+            clsH.showMessage("La cuenta '" + cuentaDestino + "' no existe");
+            return;
+        }  
+        
+        this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
+    }
+    
+    public void boucher(String cuentaDestino, String cuenta, long montoTransferencia) {
+        return;
     }
 }

@@ -29,7 +29,8 @@ public class clsMenu {
                     + "\n 5) reportes"
                     + "\n 6) extracción de dinero"
                     + "\n 7) inicio sesión clientes"
-                    + "\n 8) salir");
+                    + "\n 8) transferencias"
+                    + "\n 9) salir");
             
             switch(opcion) {
                 case 1:
@@ -54,9 +55,12 @@ public class clsMenu {
                     clsU.ingresoCajero();
                     break;
                 case 8:
+                    clsU.transferenciasDinero();
+                    break;
+                case 9:
                     break;
             }
-        } while (opcion != 8);
+        } while (opcion != 9);
         clsC.saveCajero();
     }
 }
