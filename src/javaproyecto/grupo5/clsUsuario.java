@@ -306,6 +306,7 @@ public class clsUsuario {
                 clsH.showMessage("El cajero no cuenta con los suficientes fondos para realizar la transacción");
                 break;
             }
+            this.saldo -= retiroUsuario;
             impresion = "La traccion de ₡" + retiroUsuario + " se a relizado con exito"
                     + "\n**************************************************"
                     + "\nTome su Dinero en las siguintes denomonaciones: "
@@ -457,8 +458,6 @@ public class clsUsuario {
                   
                     
                     for (int k = 13; k < usuario.length; k++) {
-                        System.out.println(cuentas[k - 13]);
-                        System.out.println(usuario[k]);
                         usuario[k] = cuentas[k - 13];
                         
                     }
@@ -483,7 +482,7 @@ public class clsUsuario {
             return;
         }  
         
-        //this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
+        this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
     }    
     
     public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
@@ -506,17 +505,15 @@ public class clsUsuario {
         for (int i = 0; i < cuentas.length; i++) {
             matchCuenta = clsH.match(this.cuenta, "Número de cuenta", cuentas[i]).find();
             if (!matchCuenta) continue;
-            String[] cuenta = cuentas[i].split("\n");
-            cuenta[1] = "Monto en la cuenta: " + this.cuenta;
+            String[] cuenta = cuentas[i].trim().split("\n");
+            cuenta[1] = "Monto en la cuenta: " + this.saldo;
             
         
-            cuentas[i] = String.join("\n", cuenta) + "\n";
-            cuentas = String.join("\\", cuentas).split("\n");
+            cuentas[i] = (i == 0 ? "" : "\n") + String.join("\n", cuenta) + "\n";
+            cuentas = (String.join("\\", cuentas) + "\\").split("\n");
                     
-            for (int k = 14; k < user.length; k++) {
-                System.out.println(user[k]);
-                System.out.println(cuentas[k - 14]);
-                user[k] = cuentas[k - 14];
+            for (int k = 13; k < user.length; k++) {
+                user[k] = cuentas[k - 13];
             }
         }
         
