@@ -27,10 +27,11 @@ public class clsMenu {
                     + "\n 3) CRUD de clientes"
                     + "\n 4) balances"
                     + "\n 5) reportes"
-                    + "\n 6) extracción de dinero"
-                    + "\n 7) inicio sesión clientes"
-                    + "\n 8) transferencias"
-                    + "\n 9) salir");
+                    + "\n 6) Depocitar"
+                    + "\n 7) extracción de dinero"
+                    + "\n 8) inicio sesión clientes"
+                    + "\n 9) transferencias"
+                    + "\n 10) salir");
             
             switch(opcion) {
                 case 1:
@@ -49,18 +50,23 @@ public class clsMenu {
                     clsR.getusuariosCreados();
                     break;
                 case 6:
-                    clsU.extraccionDinero(clsC);
+                    clsU.ingresoDinero(clsC);
                     break;
                 case 7:
-                    clsU.ingresoCajero();
+                    clsU.extraccionDinero(clsC);
                     break;
                 case 8:
-                    clsU.transferenciasDinero();
+                    clsU.ingresoCajero();
                     break;
                 case 9:
+                    clsU.transferenciasDinero();
+                    break;
+                case 10:
+                    break;
+                default:
                     break;
             }
-        } while (opcion != 9);
+        } while (opcion != 10);
         clsC.saveCajero();
     }
 }

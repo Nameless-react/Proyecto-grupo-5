@@ -57,7 +57,7 @@ public class clsHandler {
             cuenta = opciones[i].trim().split("\n");
             cuentas[i] = cuenta[0] + "\n" + cuenta[1];
         }
-        String[] selection = ((String) JOptionPane.showInputDialog(null, "Cuenta: ", "¿Con cual cuenta desea iniciar sesión?", JOptionPane.QUESTION_MESSAGE, null,cuentas, cuentas[0])).split("\n");
+        String[] selection = ((String) JOptionPane.showInputDialog(null, "Cuenta: ", " ¿Con cual cuenta desea iniciar sesión?", JOptionPane.QUESTION_MESSAGE, null,cuentas, cuentas[0])).split("\n");
         
         
         return selection[0].split("\\:")[1].trim() + "\n" + selection[1].split("\\:")[1].trim();
