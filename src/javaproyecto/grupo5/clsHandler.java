@@ -48,19 +48,19 @@ public class clsHandler {
         return Float.parseFloat(JOptionPane.showInputDialog(message));
     }
    
-    public String selection(String[] opciones) {
+    public String[] selection(String[] opciones) {
         String[] cuentas = new String[opciones.length];
         String[] cuenta;
+        int contador = 0;
         
         for (int i = 0; i < opciones.length; i++) {
-            if (opciones[i].length() < 2) continue;
+            if (opciones[i].length() < 5) continue;
             cuenta = opciones[i].trim().split("\n");
-            cuentas[i] = cuenta[0] + "\n" + cuenta[1];
+            cuentas[contador] = "Cuenta " + cuenta[0].split("\\:")[1].trim() + " con " + cuenta[1].split("\\:")[1].trim() + " " + (cuenta[3].split("\\:")[1].trim().equals("d") ? "dolares" : "colones");
+            contador++;
         }
-        String[] selection = ((String) JOptionPane.showInputDialog(null, "Cuenta: ", "¿Con cual cuenta desea iniciar sesión?", JOptionPane.QUESTION_MESSAGE, null,cuentas, cuentas[0])).split("\n");
-        
-        
-        return selection[0].split("\\:")[1].trim() + "\n" + selection[1].split("\\:")[1].trim();
+        return ((String) JOptionPane.showInputDialog(null, "Cuentas: ", "¿Con cual cuenta desea iniciar sesión?", JOptionPane.QUESTION_MESSAGE, null,cuentas, cuentas[0])).split(" ");
+
     }
     
     public String[] getData(String path) {

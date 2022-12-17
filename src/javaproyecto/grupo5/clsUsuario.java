@@ -7,7 +7,6 @@ package javaproyecto.grupo5;
 import java.awt.TextArea;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.regex.Matcher;
 
 /**
  *
@@ -16,7 +15,7 @@ import java.util.regex.Matcher;
 public class clsUsuario {
     private String nombre;
     private String cuenta;
-    private long saldo;
+    private double saldo;
     private String cedula;
     private String clientesPath;
     private char monedaCuenta;
@@ -27,8 +26,7 @@ public class clsUsuario {
     
     public String getmonedaCuenta() {
         if (this.monedaCuenta == 'c') return "colones";
-        else if(this.monedaCuenta == 'd') return "dolares";
-        return "";
+        return "dolares";
     }
     public String getNombre() {
         return this.nombre;
@@ -36,11 +34,11 @@ public class clsUsuario {
     public String getCuenta() {
         return this.cuenta;
     }
-    public long getSaldo() {
+    public double getSaldo() {
         return this.saldo;
     }
     
-    public long setSaldo(int dinero, char tipo) {
+    public double setSaldo(int dinero, char tipo) {
         clsHandler clsH = new clsHandler();
         
         if (tipo == 'd') {
@@ -74,7 +72,7 @@ public class clsUsuario {
     
         do {
             metodoInicioSesion = clsH.inputChar("Digite la manera en la que quiere iniciar sesión"
-                    + "\nc) nombre de usuario y contraseña"
+                    + "\nc) Nombre de usuario y contraseña"
                     + "\nn) Número de cuenta y ping"    
                     + "\nt) Número de targeta y ping"
                     + "\ns) salir");
@@ -95,11 +93,10 @@ public class clsUsuario {
                         
                         this.cedula = user[1].split("\\:")[1].trim();
                         String[] cuentas = clsH.getCuentas(user);
-                        String[] cuenta = clsH.selection(cuentas).split("\n");
-                        this.saldo = Long.parseLong(cuenta[1]);
-                        this.cuenta = cuenta[0];
-                        System.out.println(this.cuenta);
-                        System.out.println(this.saldo);
+                        String[] cuenta = clsH.selection(cuentas);
+                        this.saldo = Long.parseLong(cuenta[3]);
+                        this.cuenta = cuenta[1];
+                        this.monedaCuenta = cuenta[4].charAt(0);
                     }
                     break;
                 case 'n':
@@ -184,7 +181,7 @@ public class clsUsuario {
                     contVeinteMil += veinteMil;
                     clsC.setVeinteMil(clsC.getVeinteMil(), 'Q');
                 } else {
-                    montoRestante = montoRestante - monto;
+                    montoRestante -= monto;
                     impresion += veinteMil + " Billetes de ₵20000\n";
                     contVeinteMil += veinteMil;
                     clsC.setVeinteMil(veinteMil, 'Q');
@@ -201,7 +198,7 @@ public class clsUsuario {
                     clsC.setDiezMil(clsC.getDiezMil(), 'W');
 
                 } else {
-                    montoRestante = montoRestante - monto;
+                    montoRestante -= monto;
                     impresion += diesMil + " Billetes de ₵10000\n";
                     contDiesMil += diesMil;
                     clsC.setDiezMil(diesMil, 'W');
@@ -218,7 +215,7 @@ public class clsUsuario {
                     impresion += cincoMil + " Billetes de ₵5000\n";
                     clsC.setCincoMil(clsC.getCincoMil(), 'C');
                 } else {
-                    montoRestante = montoRestante - monto;
+                    montoRestante -= monto;
                     impresion += cincoMil + " Billetes de ₵5000\n";
                     contCincoMil += cincoMil;
                     clsC.setCincoMil(cincoMil, 'C');
@@ -236,7 +233,7 @@ public class clsUsuario {
                     clsC.setDosMil(clsC.getDosMil(), 'S');
 
                 } else {
-                    montoRestante = montoRestante - monto;
+                    montoRestante -= monto;
                     impresion += dosMil + " Billetes de ₵2000\n";
                     contDosMil += dosMil;
                     clsC.setDosMil(dosMil, 'S');
@@ -253,7 +250,7 @@ public class clsUsuario {
                     clsC.setMil(clsC.getMil(), 'M');
 
                 } else {
-                    montoRestante = montoRestante - monto;
+                    montoRestante -= monto;
                     impresion += mil + " Billetes de ₵1000\n";
                     contMil += mil;
                     clsC.setMil(mil, 'M');
@@ -279,9 +276,12 @@ public class clsUsuario {
         long saldocuentadestino = 0L;
         boolean cuentaDestinoMatch;
         String[] cuentas;
+        boolean existeCuentaDestino = false;
+        long saldo = 0;
+        
+        
         
         cuentaDestino = clsH.inputString("Ingrese el número de cuenta a la que se le va a envíar la transferencia");
-        boolean existeCuentaDestino = false;
 
         for (int i = 0; i < data.length; i++) {
             String[] usuario = data[i].split("\n");
@@ -292,21 +292,28 @@ public class clsUsuario {
                 if (cuentaDestinoMatch) {
                     String[] cuenta = cuentas[j].split("\n");
                     
-                    this.saldo = 1000000;
                     existeCuentaDestino = true;
-                    montoTransferencia = clsH.inputLong("Ingrese el monto que desea transferir: ");
+                    montoTransferencia = clsH.inputLong("Ingrese el monto que desea transferir en " + this.getmonedaCuenta() + ": ");
+                    
+                    
                     if(this.saldo - montoTransferencia < 0) {
                         clsH.showMessage("Fondos insuficientes");
                         return;
                     }
-                    
                     this.saldo -= montoTransferencia;
-                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
+                    
+                    char monedaCuentaDestino = cuenta[4].split("\\:")[1].trim().charAt(0);
+                    if (monedaCuentaDestino == 'd' && this.monedaCuenta == 'c') montoTransferencia /= 600;
+                    else if (monedaCuentaDestino == 'c' && this.monedaCuenta == 'd') montoTransferencia *= 600;
+                    
+
+                    cuenta[2] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[2].split("\\:")[1].trim()) + montoTransferencia);
                     cuentas[j] = String.join("\n", cuenta) + "\n";
                     cuentas = String.join("\\", cuentas).split("\n");
                     
-                    
                     for (int k = 14; k < usuario.length; k++) {
+                        System.out.println(usuario[k]);
+                        System.out.println(cuentas[k - 13]);
                         usuario[k] = cuentas[k - 13];
                     }
                     
@@ -333,7 +340,9 @@ public class clsUsuario {
         this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
     }
     
-    public void boucher(String cuentaDestino, String cuenta, long montoTransferencia) {
+    public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
+        
+        
         return;
     }
 }

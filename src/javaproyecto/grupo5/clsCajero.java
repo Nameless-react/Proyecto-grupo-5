@@ -37,18 +37,18 @@ public class clsCajero {
                 this.dosMil = 1000;
                 this.mil = 2000;
                 this.dinero = 10000000;
-                
+                //Actualizar el dinero total
                 writer.write("Dinero total: 10000000"
                         + "\n|\n"
-                        + "Billetes veinte mil: 100"
+                        + "Billetes veinte mil: 90"
                         + "\n|\n"
-                        + "Billetes diez mil: 200"
+                        + "Billetes diez mil: 190"
                         + "\n|\n"
-                        + "Billetes cinco mil: 400"
+                        + "Billetes cinco mil: 390"
                         + "\n|\n"
-                        + "Billetes dos mil: 1000"
+                        + "Billetes dos mil: 990"
                         + "\n|\n"
-                        + "Billetes mil: 2000");
+                        + "Billetes mil: 1990");
                 
                 writer.close();
             } catch(IOException e) {
