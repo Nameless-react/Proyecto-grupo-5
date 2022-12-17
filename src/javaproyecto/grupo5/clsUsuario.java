@@ -94,7 +94,7 @@ public class clsUsuario {
                         this.cedula = user[1].split("\\:")[1].trim();
                         String[] cuentas = clsH.getCuentas(user);
                         String[] cuenta = clsH.selection(cuentas);
-                        this.saldo = Long.parseLong(cuenta[3]);
+                        this.saldo = Double.parseDouble(cuenta[3]);
                         this.cuenta = cuenta[1];
                         this.monedaCuenta = cuenta[4].charAt(0);
                     }
@@ -112,7 +112,7 @@ public class clsUsuario {
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2].split("\\:")[1].trim();
-                        this.saldo = Long.parseLong(datosInicio[3].split("\\:")[1].trim());
+                        this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
                     }
                     break;
                 case 't':
@@ -128,7 +128,7 @@ public class clsUsuario {
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2].split("\\:")[1].trim();
-                        this.saldo = Long.parseLong(datosInicio[3].split("\\:")[1].trim());
+                        this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
                     }
                     break;
                 case 's':
@@ -277,7 +277,6 @@ public class clsUsuario {
         boolean cuentaDestinoMatch;
         String[] cuentas;
         boolean existeCuentaDestino = false;
-        long saldo = 0;
         
         
         
@@ -307,7 +306,7 @@ public class clsUsuario {
                     else if (monedaCuentaDestino == 'c' && this.monedaCuenta == 'd') montoTransferencia *= 600;
                     
 
-                    cuenta[2] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[2].split("\\:")[1].trim()) + montoTransferencia);
+                    cuenta[2] = "Monto en la cuenta: " + String.valueOf(Double.parseDouble(cuenta[2].split("\\:")[1].trim()) + montoTransferencia);
                     cuentas[j] = String.join("\n", cuenta) + "\n";
                     cuentas = String.join("\\", cuentas).split("\n");
                     
@@ -338,11 +337,16 @@ public class clsUsuario {
         }  
         
         this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
-    }
+    }    
     
     public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
+        clsHandler clsH = new clsHandler();
+        String boucher = "Cuenta de destino: " + cuentaDestino
+                        + "\nCuenta de origen: " + cuentaOrigen;
         
         
+        
+        clsH.showMessage(boucher);
         return;
     }
 }

@@ -14,8 +14,17 @@ public class clsReportes {
     private String[] clientesCreados = new String[1000];
     private int numeroClientesCreado = 0;
     
+    private String[] transaccionesUsuarios = new String[1000];
+    private int numeroTransaccionesUsuarios = 0;   
+    
+    private int dineroExtraidoCliente = 0;    
+    private int dineroIngresadoCliente = 0;    
+    
+    private int dineroIngresadoAdmin = 0;
+    private int numeroVecesDineroIngresadoAdmin = 0;
+    
     public void setusuariosCreados(String usuario) {
-        clientesCreados[numeroClientesCreado] = usuario;
+        this.clientesCreados[numeroClientesCreado] = usuario;
         this.numeroClientesCreado++;
     }
     
@@ -29,8 +38,41 @@ public class clsReportes {
         
     }
     
-    public void reportesAdministador() {
+    public void getTransaccionesUsuario() {
+        clsHandler clsH = new clsHandler();
+        if (this.transaccionesUsuarios[0] == null) {
+            clsH.showMessage("No se han hecho transacciones");
+            return;
+        }
+        //ordenar por fechas
         
-   }
-  
+        clsH.showMessage("");
+        
+    }
+    
+    public void setTransaccionesUsuario(String transaccion) {
+        this.transaccionesUsuarios[numeroTransaccionesUsuarios] = transaccion;
+        this.numeroTransaccionesUsuarios++;
+    }
+    
+    
+    public void getDatosCajero() {
+        clsHandler clsH = new clsHandler();
+        //totalizado por fechas
+    }
+    public void setDineroIngresadoAdmin(long dinero) {
+        this.dineroIngresadoAdmin += dinero;
+    }
+    
+    public void setnumeroVecesDineroIngresadoAdmin() {
+        this.numeroVecesDineroIngresadoAdmin++;
+    }
+    
+    public void setDineroExtraidoCliente(int dinero) {
+        this.dineroExtraidoCliente += dinero;
+    }
+    
+    public void setDineroIngresadoCliente(int dinero) {
+        this.dineroIngresadoCliente += dinero;
+    }
 }

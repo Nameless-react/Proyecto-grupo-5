@@ -31,24 +31,31 @@ public class clsCajero {
         if(data.length == 1) {
             try {
                 FileWriter writer = new FileWriter(this.cajeroPath);
-                this.veinteMil = 100;
-                this.diezMil = 200;
-                this.cincoMil = 400;
-                this.dosMil = 1000;
-                this.mil = 2000;
-                this.dinero = 10000000;
+                this.veinteMil = 950;
+                this.diezMil = 1950;
+                this.cincoMil = 3950;
+                this.dosMil = 9950;
+                this.mil = 19950;
+                this.dinero = 98100000;
                 //Actualizar el dinero total
-                writer.write("Dinero total: 10000000"
+                //1000 2000 4000 10000 20000
+                //19 000 000 
+                //19 500 000 
+                //19 750 000
+                //19 900 000
+                //19 950 000
+                //1 900 000
+                writer.write("Dinero total: 98100000"
                         + "\n|\n"
-                        + "Billetes veinte mil: 90"
+                        + "Billetes veinte mil: 950"
                         + "\n|\n"
-                        + "Billetes diez mil: 190"
+                        + "Billetes diez mil: 1950"
                         + "\n|\n"
-                        + "Billetes cinco mil: 390"
+                        + "Billetes cinco mil: 3950"
                         + "\n|\n"
-                        + "Billetes dos mil: 990"
+                        + "Billetes dos mil: 9950"
                         + "\n|\n"
-                        + "Billetes mil: 1990");
+                        + "Billetes mil: 19950");
                 
                 writer.close();
             } catch(IOException e) {
@@ -91,8 +98,8 @@ public class clsCajero {
     public int setVeinteMil(int nuevosBilletes, char tipo) {
         clsHandler clsH = new clsHandler();
         if (tipo == 'd') {
-            if(this.veinteMil + nuevosBilletes > 100) {
-                clsH.showMessage("La cantidad de billetes de veinte mil no puede ser mayor a 100");
+            if(this.veinteMil + nuevosBilletes > 1000) {
+                clsH.showMessage("La cantidad de billetes de veinte mil no puede ser mayor a 1000");
                 return -1;
             }
         
@@ -113,8 +120,8 @@ public class clsCajero {
     public int setDiezMil(int nuevosBilletes, char tipo) {
         clsHandler clsH = new clsHandler();
         if (tipo == 'd') {
-            if(this.diezMil + nuevosBilletes > 200) {
-                clsH.showMessage("La cantidad de billetes de diez mil no puede ser mayor a 200");
+            if(this.diezMil + nuevosBilletes > 2000) {
+                clsH.showMessage("La cantidad de billetes de diez mil no puede ser mayor a 2000");
                 return -1;
             }
             
@@ -133,8 +140,8 @@ public class clsCajero {
     public int setCincoMil(int nuevosBilletes, char tipo) {
         clsHandler clsH = new clsHandler();
         if (tipo == 'd') {
-            if(this.cincoMil + nuevosBilletes > 400) {
-                clsH.showMessage("La cantidad de billetes de cinco mil no puede ser mayor a 400");
+            if(this.cincoMil + nuevosBilletes > 4000) {
+                clsH.showMessage("La cantidad de billetes de cinco mil no puede ser mayor a 4000");
                 return -1;
             }
             this.setDinero(nuevosBilletes * 5000, 'd');
@@ -154,8 +161,8 @@ public class clsCajero {
     public int setDosMil(int nuevosBilletes, char tipo) {
         clsHandler clsH = new clsHandler();
         if (tipo == 'd') {
-            if(this.dosMil + nuevosBilletes > 1000) {
-                clsH.showMessage("La cantidad de billetes de dos mil no puede ser mayor a 1000");
+            if(this.dosMil + nuevosBilletes > 10000) {
+                clsH.showMessage("La cantidad de billetes de dos mil no puede ser mayor a 10000");
                 return -1;
             }
             this.setDinero(nuevosBilletes * 2000, 'd');
@@ -174,8 +181,8 @@ public class clsCajero {
     public int setMil(int nuevosBilletes, char tipo) {
         clsHandler clsH = new clsHandler();
         if(tipo == 'd') {
-            if(this.mil + nuevosBilletes > 2000) {
-                clsH.showMessage("La cantidad de billetes de mil no puede ser mayor a 2000");
+            if(this.mil + nuevosBilletes > 20000) {
+                clsH.showMessage("La cantidad de billetes de mil no puede ser mayor a 20000");
                 return -1;
 
             }
@@ -196,8 +203,8 @@ public class clsCajero {
     public void setDinero(int nuevoDinero, char tipo) {
         clsHandler clsH = new clsHandler();
         if (tipo == 'd') {
-            if (this.dinero + nuevoDinero > 10000000) {
-                clsH.showMessage("La cantidad de dinero del cajero no puede ser mayor a 10 000 000");
+            if (this.dinero + nuevoDinero > 100000000) {
+                clsH.showMessage("La cantidad de dinero del cajero no puede ser mayor a 100 000 000");
             } 
             this.dinero += nuevoDinero;
         } else {

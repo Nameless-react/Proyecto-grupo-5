@@ -43,7 +43,7 @@ public class clsMenu {
                     clsA.ingresoClientes(clsR);
                     break;
                 case 4:
-                    clsA.balances(clsC);
+                    clsA.balances(clsC, clsR);
                     break;
                 case 5:
                     clsR.getusuariosCreados();

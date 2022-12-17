@@ -579,7 +579,7 @@ public class clsAdministracion {
     
     
     
-    public void balances(clsCajero clsC) {
+    public void balances(clsCajero clsC, clsReportes clsR) {
          clsHandler clsH = new clsHandler();
         int billetesVeinte = 0, billetesDiez = 0, billetesCinco = 0, billetesDos = 0, billetesMil = 0;
         
@@ -704,6 +704,9 @@ public class clsAdministracion {
                         continuar = clsH.inputChar("¿Desea volver a hacer un deposito?"
                                 + "\ns) Si"
                                 + "\nn) No");
+                        
+                        clsR.setnumeroVecesDineroIngresadoAdmin();
+                        clsR.setDineroIngresadoAdmin(deposito);
                     } while (continuar != 'n');
                     
                     if(deposito == 0) break;
