@@ -143,8 +143,138 @@ public class clsUsuario {
         clsR.setestadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
     }
     
-    public void ingresoDinero() {
-        
+    public void ingresoDinero(clsCajero clsC) {
+        clsHandler clsH = new clsHandler();
+        int billetesVeinte = 0, billetesDiez = 0, billetesCinco = 0, billetesDos = 0,
+                billetesMil = 0, opcion = 0, exito = 0, posicion = -1;
+        int menuDenominacion = 0;
+        boolean bloqueado = false, encontrado = false;
+        long salCuent = 0, deposito = 0;
+        char continuar = ' ', siguiente = ' ';
+
+        String clientes[];
+        long montoCuenta = 1000000;
+        boolean exitCuenta = false;
+
+        String saldoCuenta[] = clsH.getData("clientes.txt");
+
+        do {
+            if (this.monedaCuenta == 'd'){
+                clsH.showMessage("Este cajero solo cuenta con colones intente de nuevo");
+                break;
+            }
+            menuDenominacion = clsH.inputInt("Ingrese las denominaciones que desea agregar a su cuenta: \n"
+                    + "1. Billetes de 20,000\n"
+                    + "2. Billetes de 10,000\n"
+                    + "3. Billetes de 5,000\n"
+                    + "4. Billetes de 2,000\n"
+                    + "5. Billetes de 1,000\n"
+                    + "6. Regresar");
+
+            switch (menuDenominacion) {
+                case 1:
+                    billetesVeinte = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡20 000: ");
+                    exito = clsC.setVeinteMil(billetesVeinte, 'd');
+                    if (exito != -1) {
+                        this.saldo += (billetesVeinte * 20000);
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 2:
+
+                    billetesDiez = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡10 000: ");
+
+                    exito = clsC.setDiezMil(billetesDiez, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        this.saldo += (billetesDiez * 10000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 3:
+
+                    billetesCinco = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡5 000: ");
+                    exito = clsC.setCincoMil(billetesCinco, 'd');
+                    if (exito != -1) {
+                        this.saldo += (billetesCinco * 5000);
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 4:
+
+                    billetesDos = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡2 000: ");
+                    exito = clsC.setDosMil(billetesDos, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        deposito += (billetesDos * 2000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 5:
+
+                    billetesMil = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nCantidad de billetes mil " + this.saldo
+                            + "\nIngrese la cantidad de billetes de ₡1 000: ");
+                    exito = clsC.setMil(billetesMil, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        deposito += (billetesMil * 1000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+                case 6:
+                    break;
+                default:
+                    clsH.showMessage("Opcion invalida intente de nuevo");
+
+            }
+
+            continuar = clsH.inputChar("¿Desea volver a hacer un ingreso?"
+                    + "\ns) Si"
+                    + "\nn) No");
+        } while (continuar != 'n');
     }
     
     public void extraccionDinero(clsCajero clsC) {

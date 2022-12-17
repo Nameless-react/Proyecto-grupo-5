@@ -106,7 +106,7 @@ public class clsReportes {
             if (this.reportesUsuario[i]==null) {
                 break;
             }
-            reporte+="transaccion#"+(i+1)+"\n"+this.reportesUsuario[i];
+            reporte+="transaccion#"+(i+1)+"\n"+this.reportesUsuario[i]+"\n";
         }
         clsH.showMessage(new TextArea(reporte));
         //2. Tipo de transaccion
@@ -138,7 +138,8 @@ public class clsReportes {
         
     }
     public void settransaccionTipo(String boucher){
-        
+        this.reportesTipo[numeroreportesTipo]=boucher;
+        this.numeroreportesTipo++;
         //1. Tipo de cuenta
         
         //2. Numero de cuenta
@@ -149,8 +150,18 @@ public class clsReportes {
         
         
     }
-    public void dettransaccionTipo(){
+    public void gettransaccionTipo(){
+        clsHandler clsH = new clsHandler();
         
+        String reporte="";
+        //1. Detalle de la cuenta incluyendo el saldo
+        for (int i = 0; i < this.reportesTipo.length; i++) {
+            if (this.reportesTipo[i]==null) {
+                break;
+            }
+            reporte+=this.reportesTipo[i]+"\n";
+        }
+        clsH.showMessage(new TextArea(reporte));
         //1. Tipo de cuenta
         
         //2. Numero de cuenta

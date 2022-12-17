@@ -4,6 +4,8 @@
  */
 package javaproyecto.grupo5;
 
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author joel
@@ -11,7 +13,9 @@ package javaproyecto.grupo5;
 public class clsMenu {
     public void menu() {
         int opcion = 0;
-        
+        int accion=0;
+        char opcionreporte=' ';
+        String[] options = {"Deposito","Retiro","Trasferencia","Reportes","Exit"};
         clsHandler clsH = new clsHandler();
         clsCajero clsC = new clsCajero("cajero.txt");
         clsAdministracion clsA = new clsAdministracion("usuarios.txt", "clientes.txt");
@@ -19,48 +23,38 @@ public class clsMenu {
         clsUsuario clsU = new clsUsuario("clientes.txt");
         
         clsC.initCajero();
-        
         do {
-            opcion = clsH.inputInt("Digite la opción que desea:"
-                    + "\n 1) inicio sesión usuarios"
-                    + "\n 2) CRUD de usuarios"
-                    + "\n 3) CRUD de clientes"
-                    + "\n 4) balances"
-                    + "\n 5) reportes"
-                    + "\n 6) extracción de dinero"
-                    + "\n 7) inicio sesión clientes"
-                    + "\n 8) transferencias"
-                    + "\n 9) salir");
-            
-            switch(opcion) {
+            accion=JOptionPane.showOptionDialog(null,"¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            switch(accion){
                 case 1:
-                    clsA.validacionContraseñaUsuario();
+                    //Deposito
+                    clsU.ingresoDinero(clsC);
                     break;
                 case 2:
-                    clsA.seguridad();
-                    break;
-                case 3:
-                    clsA.ingresoClientes(clsR);
-                    break;
-                case 4:
-                    clsA.balances(clsC, clsR);
-                    break;
-                case 5:
-                    clsR.getusuariosCreados();
-                    break;
-                case 6:
+                    //Retiro
                     clsU.extraccionDinero(clsC);
                     break;
-                case 7:
-                    clsU.ingresoCajero(clsR);
-                    break;
-                case 8:
+                case 3:
+                    //Transferencia
                     clsU.transferenciasDinero(clsR);
                     break;
-                case 9:
+                case 4:
+                    //Reportes
+                    do {
+                        opcionreporte=clsH.inputChar("¿Que tipo de reporte quiere mostrar?"
+                    + "\nA. Detalle de transaccion por cuenta y fecha"
+                    + "\nB. Estado actual de la cuenta"
+                    + "\nC. Detalle de transaccion por tipo y fecha"
+                    + "\nS. Salir");
+                    } while (opcionreporte != 'S');
+                    break;
+                case 5:
+                    //Exit
+                    break;
+                default:
                     break;
             }
-        } while (opcion != 9);
+        } while (accion !=5);
         clsC.saveCajero();
     }
 }

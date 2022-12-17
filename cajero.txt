@@ -1,0 +1,11 @@
+Dinero total: 98100000
+|
+Billetes veinte mil: 950
+|
+Billetes diez mil: 1950
+|
+Billetes cinco mil: 3950
+|
+Billetes dos mil: 9950
+|
+Billetes mil: 19950
