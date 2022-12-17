@@ -343,7 +343,7 @@ public class clsAdministracion {
                                                 + "\nn) no");
                                         if (generarCuenta == 'n') continue;
                                         
-                                        String[] cuentas = clsH.getCuentas(client);
+                                       
                                         String actualizacionCuentas = String.join("\n", client);
                                         
                                         especificacionesCuenta = clsH.especificacionesCuenta().split("\\|");
@@ -355,7 +355,7 @@ public class clsAdministracion {
 
                                         String numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
 
-                                        //CVV 
+                                        
                                         //Hacer que la fecha de expiración de la targeta a partir del dia en que se proceso la solicitud en 5 años
                                         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
                                         Calendar calendar = Calendar.getInstance();
@@ -364,16 +364,7 @@ public class clsAdministracion {
                                         //Hacer únicos los números de targetas y los números de cuentas bancarias
                                         String[] datosBancarios = clsH.generarDatosBancariosUnicos(data, numeroTargeta, numeroCuenta);
                                         numeroTargeta = datosBancarios[1]; 
-                                        numeroCuenta = datosBancarios[0];
-                                        //actualizacionCuentas += "\nNúmero de cuenta: " + numeroCuenta
-                                        //                        + "\nMonto de cuenta: 0"
-                                        //                        + "\nTipo de cuenta: " + especificacionesCuenta[0]
-                                        //                        + "\nMoneda de la cuenta: " + especificacionesCuenta[1]
-                                        //                        + "\nNúmero de targeta: " + numeroTargeta
-                                        //                        + "\nFecha de vencimiento: " + date.format(calendar.getTime())
-                                        //                        + "\nCVV: " + (int) (Math.floor(Math.random() * (900 - 100) + 100))
-                                        //                        + "\n\\";
-                                        
+                                        numeroCuenta = datosBancarios[0];       
                                         client[client.length - 1] = "\\\nNúmero de cuenta: " + numeroCuenta
                                                                 + "\nMonto de cuenta: 0"
                                                                 + "\nTipo de cuenta: " + especificacionesCuenta[0]

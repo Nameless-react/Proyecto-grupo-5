@@ -19,6 +19,7 @@ public class clsUsuario {
     private String cedula;
     private String clientesPath;
     private char monedaCuenta;
+    private int posicion;
     
     public clsUsuario(String clientesPath) {
         this.clientesPath = clientesPath;
@@ -94,9 +95,11 @@ public class clsUsuario {
                         this.cedula = user[1].split("\\:")[1].trim();
                         String[] cuentas = clsH.getCuentas(user);
                         String[] cuenta = clsH.selection(cuentas);
+                        
                         this.saldo = Double.parseDouble(cuenta[3]);
                         this.cuenta = cuenta[1];
                         this.monedaCuenta = cuenta[4].charAt(0);
+                        this.posicion = Integer.parseInt(datosInicio[1]);
                     }
                     break;
                 case 'n':
@@ -111,8 +114,10 @@ public class clsUsuario {
                         clsH.showMessage("Bienvenido(a) " + nombre);
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
-                        this.cuenta = datosInicio[2].split("\\:")[1].trim();
-                        this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
+                        this.cuenta = datosInicio[2];
+                        this.saldo = Double.parseDouble(datosInicio[3]);
+                        this.monedaCuenta = datosInicio[4].charAt(0);
+                        this.posicion = Integer.parseInt(datosInicio[1]);
                     }
                     break;
                 case 't':
@@ -127,8 +132,10 @@ public class clsUsuario {
                         clsH.showMessage("Bienvenido(a) " + nombre);
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
-                        this.cuenta = datosInicio[2].split("\\:")[1].trim();
-                        this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
+                        this.cuenta = datosInicio[2];
+                        this.saldo = Double.parseDouble(datosInicio[3]);
+                        this.monedaCuenta = datosInicio[4].charAt(0);
+                        this.posicion = Integer.parseInt(datosInicio[1]);
                     }
                     break;
                 case 's':
@@ -142,8 +149,138 @@ public class clsUsuario {
         } while (!bloqueado && continuar != 'n');
     }
     
-    public void ingresoDinero() {
-        
+    public void ingresoDinero(clsCajero clsC) {
+        clsHandler clsH = new clsHandler();
+        int billetesVeinte = 0, billetesDiez = 0, billetesCinco = 0, billetesDos = 0,
+                billetesMil = 0, opcion = 0, exito = 0, posicion = -1;
+        int menuDenominacion = 0;
+        boolean bloqueado = false, encontrado = false;
+        long salCuent = 0, deposito = 0;
+        char continuar = ' ', siguiente = ' ';
+
+        String clientes[];
+        long montoCuenta = 1000000;
+        boolean exitCuenta = false;
+
+        String saldoCuenta[] = clsH.getData("clientes.txt");
+
+        do {
+            if (this.monedaCuenta == 'd'){
+                clsH.showMessage("Este cajero solo cuenta con colones intente de nuevo");
+                break;
+            }
+            menuDenominacion = clsH.inputInt("Ingrese las denominaciones que desea agregar a su cuenta: \n"
+                    + "1. Billetes de 20,000\n"
+                    + "2. Billetes de 10,000\n"
+                    + "3. Billetes de 5,000\n"
+                    + "4. Billetes de 2,000\n"
+                    + "5. Billetes de 1,000\n"
+                    + "6. Regresar");
+
+            switch (menuDenominacion) {
+                case 1:
+                    billetesVeinte = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡20 000: ");
+                    exito = clsC.setVeinteMil(billetesVeinte, 'd');
+                    if (exito != -1) {
+                        this.saldo += (billetesVeinte * 20000);
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 2:
+
+                    billetesDiez = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡10 000: ");
+
+                    exito = clsC.setDiezMil(billetesDiez, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        this.saldo += (billetesDiez * 10000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 3:
+
+                    billetesCinco = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡5 000: ");
+                    exito = clsC.setCincoMil(billetesCinco, 'd');
+                    if (exito != -1) {
+                        this.saldo += (billetesCinco * 5000);
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 4:
+
+                    billetesDos = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nIngrese la cantidad de billetes de ₡2 000: ");
+                    exito = clsC.setDosMil(billetesDos, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        deposito += (billetesDos * 2000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+
+                case 5:
+
+                    billetesMil = clsH.inputInt("El saldo en su cuenta es de : ₡" + this.saldo + " colones"
+                            + "\nCantidad de billetes mil " + this.saldo
+                            + "\nIngrese la cantidad de billetes de ₡1 000: ");
+                    exito = clsC.setMil(billetesMil, 'd');
+                    if (exito != -1) {
+                        clsH.showMessage("El ingreso se a realizado con exito "
+                                + "\nEl nuevo saldo en su cuenta es de: ₡" + this.saldo+ " colones");
+                        deposito += (billetesMil * 1000);
+                    }
+                    continuar = clsH.inputChar("Desea continuar: "
+                            + "\ns) Si"
+                            + "\nn) No");
+                    if (continuar == 'n') {
+                        break;
+                    }
+                    break;
+                case 6:
+                    break;
+                default:
+                    clsH.showMessage("Opcion invalida intente de nuevo");
+
+            }
+
+            continuar = clsH.inputChar("¿Desea volver a hacer un ingreso?"
+                    + "\ns) Si"
+                    + "\nn) No");
+        } while (continuar != 'n');
     }
     
     public void extraccionDinero(clsCajero clsC) {
@@ -155,6 +292,10 @@ public class clsUsuario {
         String impresion = "";
 
         do {
+            if (this.monedaCuenta == 'd'){
+                clsH.showMessage("Este cajero solo cuenta con colones intente de nuevo");
+                break;
+            }
             retiroUsuario = clsH.inputInt("Ingrese el monto que desea retirar: ");
 
             if (retiroUsuario < 1000) {
@@ -273,7 +414,6 @@ public class clsUsuario {
         
         long montoTransferencia = 0L;
         String cuentaDestino;
-        long saldocuentadestino = 0L;
         boolean cuentaDestinoMatch;
         String[] cuentas;
         boolean existeCuentaDestino = false;
@@ -287,9 +427,14 @@ public class clsUsuario {
             cuentas = clsH.getCuentas(usuario);
             
             for (int j = 0; j < cuentas.length; j++) {
+                if(cuentas[j].length() < 10) continue;
+                
                 cuentaDestinoMatch = clsH.match(cuentaDestino, "Número de cuenta", cuentas[j]).find();
                 if (cuentaDestinoMatch) {
-                    String[] cuenta = cuentas[j].split("\n");
+                    
+                    String[] cuenta = cuentas[j].trim().split("\n");
+                    
+                    
                     
                     existeCuentaDestino = true;
                     montoTransferencia = clsH.inputLong("Ingrese el monto que desea transferir en " + this.getmonedaCuenta() + ": ");
@@ -301,19 +446,21 @@ public class clsUsuario {
                     }
                     this.saldo -= montoTransferencia;
                     
-                    char monedaCuentaDestino = cuenta[4].split("\\:")[1].trim().charAt(0);
+                    char monedaCuentaDestino = cuenta[3].split("\\:")[1].trim().charAt(0);
                     if (monedaCuentaDestino == 'd' && this.monedaCuenta == 'c') montoTransferencia /= 600;
                     else if (monedaCuentaDestino == 'c' && this.monedaCuenta == 'd') montoTransferencia *= 600;
                     
-
-                    cuenta[2] = "Monto en la cuenta: " + String.valueOf(Double.parseDouble(cuenta[2].split("\\:")[1].trim()) + montoTransferencia);
-                    cuentas[j] = String.join("\n", cuenta) + "\n";
-                    cuentas = String.join("\\", cuentas).split("\n");
                     
-                    for (int k = 14; k < usuario.length; k++) {
-                        System.out.println(usuario[k]);
+                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Double.parseDouble(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
+                    cuentas[j] = (j == 0 ? "" : "\n") + String.join("\n", cuenta)+ "\n";
+                    cuentas = (String.join("\\", cuentas) + "\\").split("\n");
+                  
+                    
+                    for (int k = 13; k < usuario.length; k++) {
                         System.out.println(cuentas[k - 13]);
+                        System.out.println(usuario[k]);
                         usuario[k] = cuentas[k - 13];
+                        
                     }
                     
                     try {
@@ -336,17 +483,53 @@ public class clsUsuario {
             return;
         }  
         
-        this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
+        //this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
     }    
     
     public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
         clsHandler clsH = new clsHandler();
-        String boucher = "Cuenta de destino: " + cuentaDestino
-                        + "\nCuenta de origen: " + cuentaOrigen;
-        
+        String boucher = "";
         
         
         clsH.showMessage(boucher);
         return;
+    }
+    
+    public void saveUsuario() {
+        clsHandler clsH = new clsHandler();
+        
+        String[] data = clsH.getData(this.clientesPath);
+        String[] user = data[this.posicion].split("\n");
+        String[] cuentas = clsH.getCuentas(user);
+        boolean matchCuenta = false;
+        
+        for (int i = 0; i < cuentas.length; i++) {
+            matchCuenta = clsH.match(this.cuenta, "Número de cuenta", cuentas[i]).find();
+            if (!matchCuenta) continue;
+            String[] cuenta = cuentas[i].split("\n");
+            cuenta[1] = "Monto en la cuenta: " + this.cuenta;
+            
+        
+            cuentas[i] = String.join("\n", cuenta) + "\n";
+            cuentas = String.join("\\", cuentas).split("\n");
+                    
+            for (int k = 14; k < user.length; k++) {
+                System.out.println(user[k]);
+                System.out.println(cuentas[k - 14]);
+                user[k] = cuentas[k - 14];
+            }
+        }
+        
+        try {
+            FileWriter writer = new FileWriter(clientesPath);
+            for (int i = 0; i < data.length; i++) {
+                if (this.posicion == i) clsH.changeData(user, writer); 
+                else if (i != data.length - 1) writer.write(data[i] + "|");
+            }
+
+            writer.close();
+        } catch (IOException e) {
+            clsH.showMessage("Error: " + e);
+        }
     }
 }

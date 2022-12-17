@@ -183,7 +183,7 @@ public class clsHandler {
     
     public String[] inicioSesion(String pregunta, String[] data, String identificador, boolean matcherUsuario, String error, String datos) {
         int posicion = -1;
-        String[] usuario = new String[4];
+        String[] usuario = new String[5];
         String[] user = null;
         boolean encontrado = false;
         char continuar = ' ';
@@ -204,11 +204,13 @@ public class clsHandler {
                         usuario[1] = String.valueOf(posicion);
                         return usuario;
                     } else {
+                        String[] cuenta = cuentas[j].split("\n");
                         posicion = i;
                         usuario[1] = String.valueOf(posicion);
                         encontrado = true;
-                        usuario[2] = datosUsuario;
-                        usuario[3] = cuentas[j].split("\n")[2].substring(20);
+                        usuario[2] = cuenta[0].split("\\:")[1].trim();
+                        usuario[3] = cuenta[1].split("\\:")[1].trim();
+                        usuario[4] = cuenta[3].split("\\:")[1].trim();
                         break;
                     }
                 }

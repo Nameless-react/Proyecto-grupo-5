@@ -5,6 +5,7 @@
 package javaproyecto.grupo5;
 
 import java.awt.TextArea;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -40,13 +41,21 @@ public class clsReportes {
     
     public void getTransaccionesUsuario() {
         clsHandler clsH = new clsHandler();
+        String reportesUsuarios = "";
+        
         if (this.transaccionesUsuarios[0] == null) {
             clsH.showMessage("No se han hecho transacciones");
             return;
         }
-        //ordenar por fechas
         
-        clsH.showMessage("");
+        for (int i = 0; i < this.transaccionesUsuarios.length; i++) {
+            if (this.transaccionesUsuarios[i] == null) break;
+            reportesUsuarios += this.transaccionesUsuarios[i];
+            
+        }
+        
+        
+        clsH.showMessage(new TextArea(String.join("\n", reportesUsuarios)));
         
     }
     
@@ -58,7 +67,18 @@ public class clsReportes {
     
     public void getDatosCajero() {
         clsHandler clsH = new clsHandler();
-        //totalizado por fechas
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+        String datos = date.format(date)
+                       + "\n" + "*".repeat(20)
+                       + "\nTotal de dinero ingresado por los administradores: " + this.dineroIngresadoAdmin
+                       + "\nTotal de dinero ingresado por los clientes: " + this.dineroIngresadoCliente 
+                       + "\nTotal de dinero extraido por los clientes: " + this.dineroIngresadoCliente
+                       + "\nCantidad de veces que se ha ingresado dinero por parte de los administradores: " + this.numeroVecesDineroIngresadoAdmin 
+                       + "\nCantidad de transacciones hechas por los clientes: " + this.numeroTransaccionesUsuarios;
+        
+      clsH.showMessage(new TextArea(datos));
+        
+        
     }
     public void setDineroIngresadoAdmin(long dinero) {
         this.dineroIngresadoAdmin += dinero;
@@ -74,5 +94,5 @@ public class clsReportes {
     
     public void setDineroIngresadoCliente(int dinero) {
         this.dineroIngresadoCliente += dinero;
-    }
+    }   
 }
