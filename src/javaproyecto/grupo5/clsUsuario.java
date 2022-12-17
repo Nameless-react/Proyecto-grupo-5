@@ -53,7 +53,7 @@ public class clsUsuario {
     }
     
     
-    public void ingresoCajero() {
+    public void ingresoCajero(clsReportes clsR) {
         clsHandler clsH = new clsHandler();
         String usuario = "", contraseña = "";
         char continuar = ' ', metodoInicioSesion = ' ';
@@ -140,6 +140,7 @@ public class clsUsuario {
             
             break;
         } while (!bloqueado && continuar != 'n');
+        clsR.setestadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
     }
     
     public void ingresoDinero() {
@@ -267,7 +268,7 @@ public class clsUsuario {
         } while (continuar != 'n');
     }
     
-    public void transferenciasDinero() {
+    public void transferenciasDinero(clsReportes clsR) {
         clsHandler clsH = new clsHandler();
         String[] data = clsH.getData(this.clientesPath);
         
@@ -335,11 +336,11 @@ public class clsUsuario {
             clsH.showMessage("La cuenta '" + cuentaDestino + "' no existe");
             return;
         }  
-        
-        this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
+        clsR.settransaccionCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
+        this.boucher(cuentaDestino, this.cuenta, montoTransferencia,clsR);
     }    
     
-    public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
+    public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia,clsReportes clsR) {
         clsHandler clsH = new clsHandler();
         String boucher = "Cuenta de destino: " + cuentaDestino
                         + "\nCuenta de origen: " + cuentaOrigen;
@@ -347,6 +348,6 @@ public class clsUsuario {
         
         
         clsH.showMessage(boucher);
-        return;
+        clsR.settransaccionTipo(boucher);
     }
 }

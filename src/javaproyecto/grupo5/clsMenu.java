@@ -52,10 +52,10 @@ public class clsMenu {
                     clsU.extraccionDinero(clsC);
                     break;
                 case 7:
-                    clsU.ingresoCajero();
+                    clsU.ingresoCajero(clsR);
                     break;
                 case 8:
-                    clsU.transferenciasDinero();
+                    clsU.transferenciasDinero(clsR);
                     break;
                 case 9:
                     break;
