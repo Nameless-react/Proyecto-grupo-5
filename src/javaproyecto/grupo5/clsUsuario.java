@@ -53,7 +53,7 @@ public class clsUsuario {
     }
     
     
-    public void ingresoCajero(clsReportes clsR) {
+    public int ingresoCajero(clsReportes clsR) {
         clsHandler clsH = new clsHandler();
         String usuario = "", contraseña = "";
         char continuar = ' ', metodoInicioSesion = ' ';
@@ -97,6 +97,7 @@ public class clsUsuario {
                         this.saldo = Double.parseDouble(cuenta[3]);
                         this.cuenta = cuenta[1];
                         this.monedaCuenta = cuenta[4].charAt(0);
+                        return 1;
                     }
                     break;
                 case 'n':
@@ -113,6 +114,7 @@ public class clsUsuario {
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2].split("\\:")[1].trim();
                         this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
+                        return 1;
                     }
                     break;
                 case 't':
@@ -129,6 +131,7 @@ public class clsUsuario {
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2].split("\\:")[1].trim();
                         this.saldo = Double.parseDouble(datosInicio[3].split("\\:")[1].trim());
+                        return 1;
                     }
                     break;
                 case 's':
@@ -140,7 +143,8 @@ public class clsUsuario {
             
             break;
         } while (!bloqueado && continuar != 'n');
-        clsR.setestadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
+        clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
+        return -1;
     }
     
     public void ingresoDinero(clsCajero clsC) {
@@ -275,6 +279,7 @@ public class clsUsuario {
                     + "\ns) Si"
                     + "\nn) No");
         } while (continuar != 'n');
+        
     }
     
     public void extraccionDinero(clsCajero clsC) {
@@ -466,7 +471,7 @@ public class clsUsuario {
             clsH.showMessage("La cuenta '" + cuentaDestino + "' no existe");
             return;
         }  
-        clsR.settransaccionCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
+        clsR.setTransaccionCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
         this.boucher(cuentaDestino, this.cuenta, montoTransferencia,clsR);
     }    
     
@@ -478,6 +483,6 @@ public class clsUsuario {
         
         
         clsH.showMessage(boucher);
-        clsR.settransaccionTipo(boucher);
+        clsR.setTransaccionTipo(boucher);
     }
 }

@@ -1,0 +1,7 @@
+Identificacion: 2
+Nombre: gerardo
+Contraseña: admin1234
+Puesto: ertyhju
+Año de ingreso: 2010
+Deshabilitado: false
+|

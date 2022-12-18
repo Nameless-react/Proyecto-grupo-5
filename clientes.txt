@@ -1,0 +1,30 @@
+
+Identificacion: 9876543256789
+Nombre: Juan
+Contraseña: admin1234
+Sexo: m
+Fecha de nacimiento: 03/02/1999
+Ingresos: 123456789
+Residencia: san cristobal
+Correo: frgthyjui654
+Teléfono: 2345687654
+Bloqueado: false
+Ping: 5835
+Cuenta:
+Número de cuenta: 87217079
+Monto en la cuenta: 0
+Tipo de cuenta: c
+Moneda de la cuenta: c
+Número de targeta: 6205 8741 4648 2102
+Fecha de vencimiento: 16/11/2027
+CVV: 556
+\
+Número de cuenta: 79149337
+Monto en la cuenta: 0
+Tipo de cuenta: c
+Moneda de la cuenta: c
+Número de targeta: 8210 6682 6662 8288
+Fecha de vencimiento: 16/11/2027
+CVV: 256
+\
+|
