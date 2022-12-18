@@ -8,6 +8,8 @@ import java.awt.TextArea;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -16,7 +18,7 @@ import java.text.SimpleDateFormat;
 public class clsUsuario {
     private String nombre;
     private String cuenta;
-    private double saldo;
+    private long saldo;
     private String cedula;
     private String clientesPath;
     private char monedaCuenta;
@@ -36,11 +38,11 @@ public class clsUsuario {
     public String getCuenta() {
         return this.cuenta;
     }
-    public double getSaldo() {
+    public long getSaldo() {
         return this.saldo;
     }
     
-    public double setSaldo(int dinero, char tipo) {
+    public long setSaldo(int dinero, char tipo) {
         clsHandler clsH = new clsHandler();
         
         if (tipo == 'd') {
@@ -49,7 +51,7 @@ public class clsUsuario {
         
         if (this.saldo - dinero < 0) {
             clsH.showMessage("Fondos insuficientes");
-            return -1;
+            return -1L;
         }
         return this.saldo -= dinero;
     }
@@ -95,7 +97,7 @@ public class clsUsuario {
                         String[] cuentas = clsH.getCuentas(user);
                         String[] cuenta = clsH.selection(cuentas);
                         
-                        this.saldo = Double.parseDouble(cuenta[3]);
+                        this.saldo = Long.parseLong(cuenta[3]);
                         this.cuenta = cuenta[1];
                         this.monedaCuenta = cuenta[4].charAt(0);
                         this.posicion = posicion;
@@ -116,7 +118,7 @@ public class clsUsuario {
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2];
-                        this.saldo = Double.parseDouble(datosInicio[3]);
+                        this.saldo = Long.parseLong(datosInicio[3]);
                         this.monedaCuenta = datosInicio[4].charAt(0);
                         this.posicion = posicion;
                         clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
@@ -136,7 +138,7 @@ public class clsUsuario {
                         this.nombre = nombre;
                         this.cedula = user[1].split("\\:")[1].trim();
                         this.cuenta = datosInicio[2];
-                        this.saldo = Double.parseDouble(datosInicio[3]);
+                        this.saldo = Long.parseLong(datosInicio[3]);
                         this.monedaCuenta = datosInicio[4].charAt(0);
                         clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
                         this.posicion = posicion;
@@ -281,6 +283,7 @@ public class clsUsuario {
                     + "\nn) No");
         } while (continuar != 'n');
         clsR.setTransaccionCuenta("", this.cuenta, deposito, this.saldo,"transferencia");
+        clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
     }
     
     public void extraccionDinero(clsCajero clsC, clsReportes clsR) {
@@ -304,6 +307,10 @@ public class clsUsuario {
             }
             if (clsC.getDinero() < retiroUsuario) {
                 clsH.showMessage("El cajero no cuenta con los suficientes fondos para realizar la transacción");
+                break;
+            }
+            if (retiroUsuario > this.saldo){
+                clsH.showMessage("Fondos Insuficientes");
                 break;
             }
             this.saldo -= retiroUsuario;
@@ -408,6 +415,7 @@ public class clsUsuario {
                     + "\nn) No");
             
         } while (continuar != 'n');
+        clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
     }
     
     public void transferenciasDinero(clsReportes clsR) {
@@ -459,7 +467,7 @@ public class clsUsuario {
                     else if (monedaCuentaDestino == 'c' && this.monedaCuenta == 'd') montoTransferencia *= 600;
                     
                     
-                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Double.parseDouble(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
+                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
                     cuentas[j] = (j == 0 ? "" : "\n") + String.join("\n", cuenta)+ "\n";
                     cuentas = (String.join("\\", cuentas) + "\\").split("\n");
                   
@@ -490,19 +498,21 @@ public class clsUsuario {
             return;
         }  
         clsR.setTransaccionCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
+        clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
         this.boucher(cuentaDestino, this.cuenta, montoTransferencia, clsR);
     }    
     
     public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia, clsReportes clsR) {
         clsHandler clsH = new clsHandler();
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
                            
-        String boucher =  date.format(date) + "\n"
+        String boucher =  dateFormat.format(date) + "\n"
                           + "Nombre " + nombre 
-                         + "\n cuentaDestino " + cuentaDestino
-                         + "\n cuentaOrigen " + cuentaOrigen 
-                         + "\n montoTransferencia " + montoTransferencia
+                         + "\n cuenta de destino " + cuentaDestino
+                         + "\n cuenta de origen " + cuentaOrigen 
+                         + "\n monto de transferencia " + montoTransferencia
                          + "\n"; 
                          
         

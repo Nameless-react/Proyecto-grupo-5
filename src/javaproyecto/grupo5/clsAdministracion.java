@@ -265,10 +265,13 @@ public class clsAdministracion {
                                                                 + "\n a) Fecha de nacimiento"
                                                                 + "\n b) Bloqueado"
                                                                 + "\n d) Cuentas");
+                              
                                 if (cambio != 'd') actualizado = clsH.inputString("Digite el dato actualizado:");
 
                                 switch (cambio) {
                                     case 'n':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
+                                        
                                         while(actualizado.length() <= 2) {
                                             actualizado = clsH.inputString("Digite el dato actualizado");
                                         }
@@ -277,6 +280,8 @@ public class clsAdministracion {
                                         break;
 
                                     case 'c':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
+                                        
                                         while(actualizado.length() < 8) {
                                             actualizado = clsH.inputString("Digite el dato actualizado");
                                         }
@@ -284,6 +289,8 @@ public class clsAdministracion {
                                         break;
 
                                     case 's':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
+                                        
                                         while(actualizado.toLowerCase().charAt(0) != 'm' && actualizado.toLowerCase().charAt(0) != 'f') {
                                             actualizado = clsH.inputString("Ingrese su sexo:"
                                                                     + "\n m) masculino"
@@ -293,7 +300,10 @@ public class clsAdministracion {
                                         break;
 
                                     case 'a':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         int primero = 0;
+                                        
+                                        
                                         while (true) {
                                             if (actualizado.matches("[0-9]{2}\\/[0-9]{2}\\/[0-9]{4}") && primero == 0) {
                                                 String[] format = actualizado.split("/");
@@ -322,18 +332,23 @@ public class clsAdministracion {
                                         break;
 
                                     case 'i':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         client[6] = "Ingresos: " +  actualizado;
                                         break;
 
                                     case 'r':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         client[7] = "Residencia: " +  actualizado;
                                         break;
                                         
                                     case 'e':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         client[8] = "Correo: " +  actualizado;
                                         break;
 
                                     case 't':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
+                                        
                                         while(actualizado.length() < 8) {
                                             actualizado = clsH.inputString("Digite el dato actualizado");
                                         }
@@ -345,9 +360,6 @@ public class clsAdministracion {
                                                 + "\nn) no");
                                         if (generarCuenta == 'n') continue;
                                         
-                                       
-                                        String actualizacionCuentas = String.join("\n", client);
-                                        
                                         especificacionesCuenta = clsH.especificacionesCuenta().split("\\|");
                                         
                                         String numeroTargeta = (int) (Math.floor(Math.random() * (9000 - 1000) + 1000)) +
@@ -358,12 +370,12 @@ public class clsAdministracion {
                                         String numeroCuenta = String.valueOf((int) (Math.floor(Math.random() * (100000000 - 10000000) + 10000000)));
 
                                         
-                                        //Hacer que la fecha de expiración de la targeta a partir del dia en que se proceso la solicitud en 5 años
+                                        //--- Hacer que la fecha de expiración de la targeta a partir del dia en que se proceso la solicitud en 5 años ---//
                                         SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
                                         Calendar calendar = Calendar.getInstance();
                                         calendar.add(Calendar.YEAR, +5);
 
-                                        //Hacer únicos los números de targetas y los números de cuentas bancarias
+                                        //--- Hacer únicos los números de targetas y los números de cuentas bancarias ---//
                                         String[] datosBancarios = clsH.generarDatosBancariosUnicos(data, numeroTargeta, numeroCuenta);
                                         numeroTargeta = datosBancarios[1]; 
                                         numeroCuenta = datosBancarios[0];       
@@ -422,7 +434,7 @@ public class clsAdministracion {
                     
                 case 'r':
                     data = clsH.getData(this.clientesPath);
-                    clsH.showMessage(new TextArea(String.join("\n\n", data)));                        
+                    clsH.showMessage(new TextArea(String.join("\n\n", data).replace("\\", "\n")));                        
                    
                     break;
                 }
@@ -440,7 +452,7 @@ public class clsAdministracion {
         String[] data;
         String[] user;
         
-        Matcher matcher;
+        boolean matcher;
         
         do {
             if (!exitsDataBase.exists()) {
@@ -489,9 +501,9 @@ public class clsAdministracion {
                         FileWriter writer = new FileWriter(this.usuariosPath);
                         
                         for (int i = 0; i < data.length; i++) {
-                            matcher = clsH.match(id, "Identificacion", data[i]);
+                            matcher = clsH.match(id, "Identificacion", data[i]).find();
                             
-                            if (matcher.find()) {
+                            if (matcher) {
                                 user = data[i].split("\n");
                                 
                                 cambio = clsH.inputChar("¿Que desea cambiar?"
@@ -499,10 +511,11 @@ public class clsAdministracion {
                                                                 + "\n c) Contraseña"
                                                                 + "\n p) Puesto"
                                                                 + "\n a) Año de ingreso");
-                                String actualizado = clsH.inputString("Digite el dato actualizado:");
-                           
+                                
+                                String actualizado = "";
                                 switch (cambio) {
                                     case 'n':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         while (actualizado.length() <= 2) {
                                              actualizado = clsH.inputString("Digite un nombre valido:");
                                         }
@@ -510,6 +523,7 @@ public class clsAdministracion {
                                         user[2] = "Nombre: " + actualizado;
                                         break;
                                     case 'c':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         while (actualizado.length() <= 8) {
                                             actualizado = clsH.inputString("Digite una contraseña valida:");
                                         }
@@ -517,15 +531,20 @@ public class clsAdministracion {
                                         user[3] = "Contraseña: " + actualizado;
                                         break;
                                     case 'p':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         user[4] = "Puesto: " +  actualizado;
                                         break;
                                     case 'a':
+                                        actualizado = clsH.inputString("Digite el dato actualizado:");
                                         while (actualizado.length() != 4) {
                                             actualizado = clsH.inputString("Digite una un año valido:");
                                         }
                                         
                                         user[5] = "Año de ingreso: " +  actualizado;
-                                        break; 
+                                        break;
+                                    default:
+                                        clsH.showMessage("Opción invalida");
+                                        break;
                                 }
                                 
                                 clsH.changeData(user, writer); 
@@ -543,8 +562,8 @@ public class clsAdministracion {
                         
                         FileWriter disable = new FileWriter(this.usuariosPath);
                         for (int i = 0; i < data.length; i++) {
-                            matcher = clsH.match(id, "Identificacion", data[i]);
-                            if (matcher.find()) {
+                            matcher = clsH.match(id, "Identificacion", data[i]).find();
+                            if (matcher) {
                                 user = data[i].split("\n");
                                 Boolean estado = !Boolean.valueOf(user[6].substring(15));
                                 
@@ -560,6 +579,11 @@ public class clsAdministracion {
                         }
                         
                         disable.close();
+                        break;
+                        //falta mostrarlos
+                    case 'r':
+                        data = clsH.getData(this.clientesPath);
+                        clsH.showMessage(new TextArea(String.join("\n", data)));
                         break;
                 }
 

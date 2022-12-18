@@ -103,7 +103,7 @@ public class clsHandler {
                     
                     write.close();
                 } else if (path.contains("usuarios.txt")) {
-                    write.write("Identificacion: 2\n" +
+                    write.write("\nIdentificacion: 2\n" +
                                 "Nombre: gerardo\n" +
                                 "Contraseña: admin1234\n" +
                                 "Puesto: ertyhju\n" +

@@ -6,6 +6,8 @@ package javaproyecto.grupo5;
 
 import java.awt.TextArea;
 import java.text.SimpleDateFormat;
+import java.time.LocalDate;
+import java.util.Date;
 
 /**
  *
@@ -91,8 +93,10 @@ public class clsReportes {
     
     public void getDatosCajero() {
         clsHandler clsH = new clsHandler();
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
-        String datos = date.format(date)
+        
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+        String datos = dateFormat.format(date)
                        + "\n" + "*".repeat(20)
                        + "\nTotal de dinero ingresado por los administradores: " + this.dineroIngresadoAdmin
                        + "\nTotal de dinero ingresado por los clientes: " + this.dineroIngresadoCliente 
@@ -134,17 +138,18 @@ public class clsReportes {
     
     public void getTransaccionCuenta(){
         clsHandler clsH = new clsHandler();
-        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+        Date date = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
         
-        String reporte = date.format(date) + "\n";
+        String reporte = dateFormat.format(date) + "\n";
         for (int i = 0; i < this.reportesUsuario.length; i++) {
             if (this.reportesUsuario[i] == null) break;
-            reporte += "transaccion#" + (i + 1) + "\n" + this.reportesUsuario[i] + "\n";
+            reporte += "transacción#" + (i + 1) + "\n" + this.reportesUsuario[i] + "\n";
         }
         clsH.showMessage(new TextArea(reporte));
     }
     
-    public void setEstadoCuenta(double saldo,String nombre,String cedula,String cuenta,char monedaCuenta){
+    public void setEstadoCuenta(double saldo, String nombre, String cedula, String cuenta, char monedaCuenta){
         //1. Detalle de la cuenta
         //2. Monto disponible
         //3. Datos personales

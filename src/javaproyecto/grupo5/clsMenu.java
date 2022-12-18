@@ -31,7 +31,7 @@ public class clsMenu {
         int accion = 0;
         int exito = 0;
         
-        String[] options = {"Cliente", "Usuario", "Exit"};
+        String[] options = {"Cliente", "Administrador", "Exit"};
         
         do {
             accion=JOptionPane.showOptionDialog(null,"¿Como desea iniciar sesion?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -71,7 +71,10 @@ public class clsMenu {
         
         
         do {
-            accion=JOptionPane.showOptionDialog(null,"¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            accion=JOptionPane.showOptionDialog(null,"Nombre: " + clsU.getNombre()
+                    + "Cuenta: " + clsU.getCuenta()
+                    + "Saldo: " + clsU.getSaldo() + "" + clsU.getmonedaCuenta()
+                    + "¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
             switch(accion){
                 case 0:
                     //Deposito
