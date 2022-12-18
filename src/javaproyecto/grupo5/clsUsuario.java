@@ -282,7 +282,7 @@ public class clsUsuario {
                     + "\ns) Si"
                     + "\nn) No");
         } while (continuar != 'n');
-        clsR.setTransaccionCuenta("", this.cuenta, deposito, this.saldo,"transferencia");
+        clsR.setTransaccionesCuenta("", this.cuenta, deposito, this.saldo,"transferencia");
         clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
     }
     
@@ -314,7 +314,7 @@ public class clsUsuario {
                 break;
             }
             this.saldo -= retiroUsuario;
-            clsR.setTransaccionCuenta("", this.cuenta, retiroUsuario, this.saldo, "extraccion");
+            clsR.setTransaccionesCuenta("", this.cuenta, retiroUsuario, this.saldo, "extraccion");
             impresion = "La traccion de ₡" + retiroUsuario + " se a relizado con exito"
                     + "\n**************************************************"
                     + "\nTome su Dinero en las siguintes denomonaciones: "
@@ -497,7 +497,7 @@ public class clsUsuario {
             clsH.showMessage("La cuenta '" + cuentaDestino + "' no existe");
             return;
         }  
-        clsR.setTransaccionCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
+        clsR.setTransaccionesCuenta(cuentaDestino, this.cuenta, montoTransferencia,this.saldo,"transferencia");
         clsR.setEstadoCuenta(this.saldo,this.nombre,this.cedula,this.cuenta,this.monedaCuenta);
         this.boucher(cuentaDestino, this.cuenta, montoTransferencia, clsR);
     }    

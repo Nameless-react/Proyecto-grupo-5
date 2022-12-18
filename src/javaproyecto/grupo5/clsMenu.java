@@ -72,9 +72,9 @@ public class clsMenu {
         
         do {
             accion=JOptionPane.showOptionDialog(null,"Nombre: " + clsU.getNombre()
-                    + "Cuenta: " + clsU.getCuenta()
-                    + "Saldo: " + clsU.getSaldo() + "" + clsU.getmonedaCuenta()
-                    + "¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+                    + "\nCuenta: " + clsU.getCuenta()
+                    + "\nSaldo: " + clsU.getSaldo() + " " + clsU.getmonedaCuenta()
+                    + "\n¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
             switch(accion){
                 case 0:
                     //Deposito
@@ -99,7 +99,7 @@ public class clsMenu {
                         
                         switch(opcionReporte){
                             case 1:
-                                this.clsR.getTransaccionesUsuario();
+                                this.clsR.getTransaccionesCuenta();
                                 break;
                             case 2:
                                 this.clsR.getEstadoCuenta();

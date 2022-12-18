@@ -124,19 +124,19 @@ public class clsReportes {
         this.dineroIngresadoCliente += dinero;
     }
     
-    public void setTransaccionCuenta(String cuentaDestino, String cuenta, double montoTransferencia, double saldo, String tipo){
+    public void setTransaccionesCuenta(String cuentaDestino, String cuenta, long montoTransferencia, long saldo, String tipo){
         //1. Detalle de la cuenta incluyendo el saldo
         //2. Tipo de transaccion
         //3. Monto
         //4. Fecha
-        this.reportesUsuario[numeroreportesUsuario] = "Cuenta origen: " + cuenta
+        this.reportesUsuario[this.numeroreportesUsuario] = "Cuenta origen: " + cuenta
                                                     + "\nCuenta destino: " + cuentaDestino
                                                     + "\nSaldo actual: " + saldo 
                                                     + "\nTipo de transaccion" + tipo;
         this.numeroreportesUsuario++;
     }
     
-    public void getTransaccionCuenta(){
+    public void getTransaccionesCuenta(){
         clsHandler clsH = new clsHandler();
         Date date = new Date();
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
