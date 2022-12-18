@@ -7,6 +7,7 @@ package javaproyecto.grupo5;
 import java.awt.TextArea;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 
 /**
  *
@@ -266,31 +267,39 @@ public class clsUsuario {
 
         } while (continuar != 'n');
     }
-    
+    // ---Aqui empieza la seccion para transferir dinero--- //
+      
     public void transferenciasDinero() {
+       //---- estas son las variantes que se van a utilizar----//
+
         clsHandler clsH = new clsHandler();
+        //--- esta es la ruta del archivo del cliente---//
         String[] data = clsH.getData(this.clientesPath);
         
         long montoTransferencia = 0L;
         String cuentaDestino;
-        long saldocuentadestino = 0L;
+        //---- aqui se realiza con el boolean la operacion si es verdadera o falsa---//
         boolean cuentaDestinoMatch;
         String[] cuentas;
         boolean existeCuentaDestino = false;
-        long saldo = 0;
         
         
         
         cuentaDestino = clsH.inputString("Ingrese el número de cuenta a la que se le va a envíar la transferencia");
-
+//---- aqui se aplican la el vector de data para buscar cada posicion , cada split separa los datos del usuario en un vector por el salto de linea--//
         for (int i = 0; i < data.length; i++) {
             String[] usuario = data[i].split("\n");
             cuentas = clsH.getCuentas(usuario);
             
             for (int j = 0; j < cuentas.length; j++) {
+                if(cuentas[j].length() < 10) continue;
+                
                 cuentaDestinoMatch = clsH.match(cuentaDestino, "Número de cuenta", cuentas[j]).find();
                 if (cuentaDestinoMatch) {
-                    String[] cuenta = cuentas[j].split("\n");
+                    
+                    String[] cuenta = cuentas[j].trim().split("\n");
+                    
+                    
                     
                     existeCuentaDestino = true;
                     montoTransferencia = clsH.inputLong("Ingrese el monto que desea transferir en " + this.getmonedaCuenta() + ": ");
@@ -301,22 +310,23 @@ public class clsUsuario {
                         return;
                     }
                     this.saldo -= montoTransferencia;
-                    
-                    char monedaCuentaDestino = cuenta[4].split("\\:")[1].trim().charAt(0);
+                    //--aqui se consigue el tipo de moneda que tiene la cuenta de destino--//
+                    char monedaCuentaDestino = cuenta[3].split("\\:")[1].trim().charAt(0);
+                    //--aqui se hace la conversion de la moneda que tiene la cuenta de transferencia ala que tiene la de destino--//
                     if (monedaCuentaDestino == 'd' && this.monedaCuenta == 'c') montoTransferencia /= 600;
                     else if (monedaCuentaDestino == 'c' && this.monedaCuenta == 'd') montoTransferencia *= 600;
                     
-
-                    cuenta[2] = "Monto en la cuenta: " + String.valueOf(Long.parseLong(cuenta[2].split("\\:")[1].trim()) + montoTransferencia);
-                    cuentas[j] = String.join("\n", cuenta) + "\n";
-                    cuentas = String.join("\\", cuentas).split("\n");
-                    
-                    for (int k = 14; k < usuario.length; k++) {
-                        System.out.println(usuario[k]);
-                        System.out.println(cuentas[k - 13]);
+                    //--aqui guardo el nuevo valor de la cuenta de destino y sus cambios--//
+                    cuenta[1] = "Monto en la cuenta: " + String.valueOf(Double.parseDouble(cuenta[1].split("\\:")[1].trim()) + montoTransferencia);
+                    cuentas[j] = (j == 0 ? "" : "\n") + String.join("\n", cuenta)+ "\n";
+                    cuentas = (String.join("\\", cuentas) + "\\").split("\n");
+                  
+                    //--aqui las lineas de usuario se actualiza con las lineas de la cuenta--//
+                    for (int k = 13; k < usuario.length; k++) {
                         usuario[k] = cuentas[k - 13];
+                        
                     }
-                    
+                    //---aqui escribe la informacion que se cambio del usuario--//
                     try {
                         FileWriter writer = new FileWriter(this.clientesPath);
                         for (int k = 0; k < data.length; k++) {
@@ -336,13 +346,32 @@ public class clsUsuario {
             clsH.showMessage("La cuenta '" + cuentaDestino + "' no existe");
             return;
         }  
-        
-        this.boucher(cuentaDestino, this.cuenta, montoTransferencia);
+
+        this.boucher(this.nombre ,cuentaDestino, this.cuenta, montoTransferencia);
     }
     
-    public void boucher(String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
+    public void boucher(String nombre, String cuentaDestino, String cuentaOrigen, long montoTransferencia) {
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+
+                           
+        String boucher =  date.format(date) + "\n"
+                          + "Nombre " + nombre 
+                         + "\n cuentaDestino " + cuentaDestino
+                         + "\n cuentaOrigen " + cuentaOrigen 
+                         + "\n montoTransferencia " + montoTransferencia
+                         + "\n"; 
+                         
+        clsHandler clsH = new clsHandler();
+        
+        clsH.showMessage(boucher);
         
         
-        return;
+        
+        
+        
+        
+        
+        
+        
     }
 }
