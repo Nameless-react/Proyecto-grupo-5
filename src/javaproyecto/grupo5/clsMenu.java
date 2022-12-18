@@ -117,6 +117,7 @@ public class clsMenu {
                     break;
             }
         } while (accion != 4);
+        clsU.saveUsuario();
         
     }
     
