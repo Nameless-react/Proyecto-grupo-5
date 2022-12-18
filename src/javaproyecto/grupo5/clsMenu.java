@@ -8,60 +8,141 @@ package javaproyecto.grupo5;
  *
  * @author joel
  */
+import javax.swing.JOptionPane;
 public class clsMenu {
-    public void menu() {
-        int opcion = 0;
+    
+
+//-----Separamos las clases para que se puedan acceder desde los 2 metodos-----//
+    private clsCajero clsC = new clsCajero("cajero.txt");
+    private clsReportes clsR = new clsReportes();
+    
+    
+    
+    
+    //-----INICIO DE SESION-------//
+    public void inicioSesion(){
+        this.clsC.initCajero();
         
-        clsHandler clsH = new clsHandler();
-        clsCajero clsC = new clsCajero("cajero.txt");
+        
         clsAdministracion clsA = new clsAdministracion("usuarios.txt", "clientes.txt");
-        clsReportes clsR = new clsReportes();
         clsUsuario clsU = new clsUsuario("clientes.txt");
         
-        clsC.initCajero();
+        
+        int accion = 0;
+        int exito = 0;
+        
+        String[] options = {"Cliente", "Usuario", "Exit"};
         
         do {
-            opcion = clsH.inputInt("Digite la opción que desea:"
-                    + "\n 1) inicio sesión usuarios"
-                    + "\n 2) CRUD de usuarios"
-                    + "\n 3) CRUD de clientes"
-                    + "\n 4) balances"
-                    + "\n 5) reportes"
-                    + "\n 6) extracción de dinero"
-                    + "\n 7) inicio sesión clientes"
-                    + "\n 8) transferencias"
-                    + "\n 9) salir");
-            
-            switch(opcion) {
+            accion=JOptionPane.showOptionDialog(null,"¿Como desea iniciar sesion?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            switch(accion){
+                case 0:
+                    //Clientes
+                    exito = clsU.ingresoCajero(this.clsR);
+                    if (exito == 1) {
+                        this.menuCliente(clsU);
+                    }
+                    break;
                 case 1:
-                    clsA.validacionContraseñaUsuario();
+                    //Usuarios
+                    exito = clsA.validacionContraseñaUsuario();
+                    if (exito == 1) {
+                        this.menuAdministrador(clsA);
+                    }
                     break;
                 case 2:
-                    clsA.seguridad();
-                    break;
-                case 3:
-                    clsA.ingresoClientes(clsR);
-                    break;
-                case 4:
-                    clsA.balances(clsC, clsR);
-                    break;
-                case 5:
-                    clsR.getusuariosCreados();
-                    break;
-                case 6:
-                    clsU.extraccionDinero(clsC);
-                    break;
-                case 7:
-                    clsU.ingresoCajero();
-                    break;
-                case 8:
-                    clsU.transferenciasDinero();
-                    break;
-                case 9:
+                    //Exit
                     break;
             }
-        } while (opcion != 9);
-        clsC.saveCajero();
-        clsU.saveUsuario();
+        } while(accion != 2);
+        this.clsC.saveCajero();
+    }
+    
+    
+    
+    //-----MENU DEL CLIENTE-------//
+    public void menuCliente(clsUsuario clsU) {
+        clsHandler clsH = new clsHandler();
+        
+        
+        int accion = 0;
+        int opcionReporte = 0;
+        String[] options = {"Deposito", "Retiro", "Trasferencia", "Reportes", "Exit"};
+        
+        
+        do {
+            accion=JOptionPane.showOptionDialog(null,"¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            switch(accion){
+                case 0:
+                    //Deposito
+                    clsU.ingresoDinero(this.clsC, this.clsR);
+                    break;
+                case 1:
+                    //Retiro
+                    clsU.extraccionDinero(this.clsC, this.clsR);
+                    break;
+                case 2:
+                    //Transferencia
+                    clsU.transferenciasDinero(this.clsR);
+                    break;
+                case 3:
+                    //Reportes
+                    do {
+                        opcionReporte = clsH.inputInt("¿Que tipo de reporte quiere mostrar?"
+                    + "\n1. Detalle de transaccion por cuenta y fecha"
+                    + "\n2. Estado actual de la cuenta"
+                    + "\n3. Detalle de transaccion por tipo y fecha"
+                    + "\n4. Salir");
+                        
+                        switch(opcionReporte){
+                            case 1:
+                                this.clsR.getTransaccionesUsuario();
+                                break;
+                            case 2:
+                                this.clsR.getEstadoCuenta();
+                                break;
+                            case 3:
+                                this.clsR.getTransaccionTipo();
+                                break;
+                            case 4:
+                                break;
+                        }
+                    } while (opcionReporte != 4);
+                    break;
+                case 4:
+                    //Exit
+                    break;
+            }
+        } while (accion != 4);
+        
+    }
+    
+    
+    
+    //---MENU DEL ADMINISTRADOR-----//
+    public void menuAdministrador(clsAdministracion clsA){
+        int accion = 0;
+        String[] options = {"CRUD Clientes", "CRUD Usuarios", "Deposito al Cajero", "Exit"};
+        
+        do {
+            accion=JOptionPane.showOptionDialog(null,"¿Que desea realizar?","ATM", 0, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+            switch(accion){
+                case 0:
+                    //CRUD Clientes
+                    clsA.ingresoClientes(this.clsR);
+                    break;
+                case 1:
+                    //CRUD Usuarios
+                    clsA.seguridad();
+                    break;
+                case 2:
+                    //Deposito al Cajero
+                    clsA.balances(this.clsC, this.clsR);
+                    break;
+                case 3:
+                    //Exit
+                    break;
+            }
+        } while (accion != 3);
     }
 }

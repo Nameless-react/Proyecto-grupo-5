@@ -32,7 +32,7 @@ public class clsAdministracion {
         this.clientesPath = clientesPath;
     }
     
-    public void validacionContraseñaUsuario() {
+    public int validacionContraseñaUsuario() {
         clsHandler clsH = new clsHandler();
         String identificacion = "", contraseña = "";
         char continuar = ' ';
@@ -58,7 +58,7 @@ public class clsAdministracion {
                 user = data[i].split("\n");
                 if (Boolean.parseBoolean(user[6].substring(15)))  {
                     clsH.showMessage("El usuario está bloqueado");
-                    return;
+                    return -1;
                 } else {
                     posicion = i;
                     encontrado = true;
@@ -96,13 +96,14 @@ public class clsAdministracion {
                             clsH.showMessage("Error: " + e);
                         }
                         bloqueado = true;
+                        return -1;
                     }
                 } else {
                     String nombre = user[2].split("\\:")[1].trim();
                     clsH.showMessage("Bienvenido(a) " + nombre);
                     this.administrador = nombre;
                     this.id = identificacion;
-                    break;
+                    return 1;
                 }   
             }
             
@@ -110,6 +111,7 @@ public class clsAdministracion {
             
             break;
         } while (!bloqueado && continuar != 'n');
+        return -1;
     }
     
     
@@ -118,7 +120,7 @@ public class clsAdministracion {
         char option = ' ', cambio = ' ';
      
         String id = "";
-        File exitsDataBase = new File(this.usuariosPath);
+        File exitsDataBase = new File(this.clientesPath);
         
         String[] especificacionesCuenta;
         String[] data;
@@ -579,7 +581,7 @@ public class clsAdministracion {
         int exito = 0;
         long deposito = 0;
         
-        char continuar = ' ', siguiente = ' ';
+        char continuar = ' ';
         String impresion = "";
 
         do {
@@ -696,7 +698,7 @@ public class clsAdministracion {
                                 + "\ns) Si"
                                 + "\nn) No");
                         
-                        clsR.setnumeroVecesDineroIngresadoAdmin();
+                        clsR.setNumeroVecesDineroIngresadoAdmin();
                         clsR.setDineroIngresadoAdmin(deposito);
                     } while (continuar != 'n');
                     

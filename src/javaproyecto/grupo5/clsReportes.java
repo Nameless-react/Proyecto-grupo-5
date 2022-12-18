@@ -12,6 +12,7 @@ import java.text.SimpleDateFormat;
  * @author joel
  */
 public class clsReportes {
+    //--- Atributos de reportes ---//
     private String[] clientesCreados = new String[1000];
     private int numeroClientesCreado = 0;
     
@@ -23,6 +24,29 @@ public class clsReportes {
     
     private int dineroIngresadoAdmin = 0;
     private int numeroVecesDineroIngresadoAdmin = 0;
+    
+    
+    private String[] reportesUsuario = new String[1000];
+    private int numeroreportesUsuario = 0;
+    
+    private String datosUsuario = "";
+    
+    private String[] reportesTipo = new String[1000];
+    private int numeroreportesTipo = 0;
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    //--- getters y setters ---//
     
     public void setusuariosCreados(String usuario) {
         this.clientesCreados[numeroClientesCreado] = usuario;
@@ -84,7 +108,7 @@ public class clsReportes {
         this.dineroIngresadoAdmin += dinero;
     }
     
-    public void setnumeroVecesDineroIngresadoAdmin() {
+    public void setNumeroVecesDineroIngresadoAdmin() {
         this.numeroVecesDineroIngresadoAdmin++;
     }
     
@@ -94,5 +118,63 @@ public class clsReportes {
     
     public void setDineroIngresadoCliente(int dinero) {
         this.dineroIngresadoCliente += dinero;
-    }   
+    }
+    
+    public void setTransaccionCuenta(String cuentaDestino, String cuenta, double montoTransferencia, double saldo, String tipo){
+        //1. Detalle de la cuenta incluyendo el saldo
+        //2. Tipo de transaccion
+        //3. Monto
+        //4. Fecha
+        this.reportesUsuario[numeroreportesUsuario] = "Cuenta origen: " + cuenta
+                                                    + "\nCuenta destino: " + cuentaDestino
+                                                    + "\nSaldo actual: " + saldo 
+                                                    + "\nTipo de transaccion" + tipo;
+        this.numeroreportesUsuario++;
+    }
+    
+    public void getTransaccionCuenta(){
+        clsHandler clsH = new clsHandler();
+        SimpleDateFormat date = new SimpleDateFormat("dd/MM/yyyy");
+        
+        String reporte = date.format(date) + "\n";
+        for (int i = 0; i < this.reportesUsuario.length; i++) {
+            if (this.reportesUsuario[i] == null) break;
+            reporte += "transaccion#" + (i + 1) + "\n" + this.reportesUsuario[i] + "\n";
+        }
+        clsH.showMessage(new TextArea(reporte));
+    }
+    
+    public void setEstadoCuenta(double saldo,String nombre,String cedula,String cuenta,char monedaCuenta){
+        //1. Detalle de la cuenta
+        //2. Monto disponible
+        //3. Datos personales
+        this.datosUsuario = "Nombre: " + nombre
+                            + "\nCedula: "+ cedula 
+                            + "\nMonto disponible: " + saldo  
+                            + "\nMoneda de la cuenta: " + (monedaCuenta == 'd' ? "Dolares" : "Colones");
+    }
+    
+    public void getEstadoCuenta(){
+        clsHandler clsH = new clsHandler();
+        clsH.showMessage(new TextArea(this.datosUsuario));
+    }
+    
+    public void setTransaccionTipo(String boucher){
+        //1. Tipo de cuenta
+        //2. Numero de cuenta
+        //3. Monto de transaccion
+        //4. Fecha de transaccion
+        this.reportesTipo[numeroreportesTipo]=boucher;
+        this.numeroreportesTipo++;
+    }
+    
+    public void getTransaccionTipo(){
+        clsHandler clsH = new clsHandler();
+        String reporte = "";
+        for (int i = 0; i < this.reportesTipo.length; i++) {
+            if (this.reportesTipo[i] == null) break;
+            reporte += this.reportesTipo[i] + "\n";
+        }
+        clsH.showMessage(new TextArea(reporte));
+    }
 }
