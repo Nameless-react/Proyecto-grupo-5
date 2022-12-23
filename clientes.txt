@@ -1,0 +1,79 @@
+
+Identificacion: 9876543256789
+Nombre: Josue
+Contraseña: 2345678ijhgfr456yuhgf
+Sexo: m
+Fecha de nacimiento: 06/02/2000
+Ingresos: 876545678
+Residencia: ogijrptu
+Correo: gh9085hg
+Teléfono: 8543234567887654
+Bloqueado: false
+Ping: 5835
+Cuentas:
+Número de cuenta: 87217079
+Monto en la cuenta: 24000
+Tipo de cuenta: a
+Moneda de la cuenta: d
+Número de targeta: 8990 3989 2214 6012
+Fecha de vencimiento: 09/12/2027
+CVV: 435
+\\
+Número de cuenta: 57
+Monto en la cuenta: 2076200
+Tipo de cuenta: a
+Moneda de la cuenta: c
+Número de targeta: 8990 3989 2214 6012
+Fecha de vencimiento: 09/12/2027
+CVV: 435
+|
+Identificacion: 34567876543
+Nombre: Ale
+Contraseña: 34567itre45
+Sexo: f
+Fecha de nacimiento: 31/12/2003
+Ingresos: 567856789
+Residencia: hola
+Correo: e4r5678ikytr
+Teléfono: 234567987654
+Bloqueado: false
+Ping: 121
+Cuentas:
+Número de cuenta: 90799516
+Monto en la cuenta: 40000
+Tipo de cuenta: c
+Moneda de la cuenta: c
+Número de targeta: 6530 5354 3834 4363
+Fecha de vencimiento: 10/12/2027
+CVV: 450
+\\
+Número de cuenta: 79149337
+Monto en la cuenta: 0
+Tipo de cuenta: a
+Moneda de la cuenta: c
+Número de targeta: 8210 6682 6662 8288
+Fecha de vencimiento: 10/12/2027
+CVV: 649
+\\
+|
+Identificacion: 345678754567
+Nombre: Joel
+Contraseña: 34567u8ikjhr
+Sexo: m
+Fecha de nacimiento: 31/12/2003
+Ingresos: 4567ujhgfew
+Residencia: e456y7uikjhygtr
+Correo: 3er4567uiuyhtre
+Teléfono: 356787654
+Bloqueado: true
+Ping: 822
+Cuentas:
+Número de cuenta: 10653541
+Monto en la cuenta: 10653541
+Tipo de cuenta: d
+Moneda de la cuenta: d
+Número de targeta: 1344 2925 3621 8253
+Fecha de vencimiento: 15/12/2027
+CVV: 434
+\\
+|

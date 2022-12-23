@@ -1,0 +1,15 @@
+
+Identificacion: 2
+Nombre: gerardo
+Contraseña: admin1234
+Puesto: ertyhju
+Año de ingreso: 2010
+Deshabilitado: false
+|
+Identificacion: 118930192
+Nombre: Mauricio
+Contraseña: 3Mauricio
+Puesto: Ingeniero
+Año de ingreso: 2022
+Deshabilitado: false
+|

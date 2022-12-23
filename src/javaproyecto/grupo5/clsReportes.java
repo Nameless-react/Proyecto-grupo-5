@@ -132,7 +132,7 @@ public class clsReportes {
         this.reportesUsuario[this.numeroreportesUsuario] = "Cuenta origen: " + cuenta
                                                     + "\nCuenta destino: " + cuentaDestino
                                                     + "\nSaldo actual: " + saldo 
-                                                    + "\nTipo de transaccion" + tipo;
+                                                    + "\nTipo de transaccion: " + tipo;
         this.numeroreportesUsuario++;
     }
     
